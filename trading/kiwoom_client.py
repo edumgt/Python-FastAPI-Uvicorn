@@ -196,7 +196,7 @@ class KiwoomTrader:
         """시뮬레이션 모드: yfinance로 KRX 종목 현재가 조회"""
         try:
             import yfinance as yf
-            ticker = f"{symbol}.KS" if not symbol.endswith(".KS") else symbol
+            ticker = f"{symbol}.KS" if not symbol.endswith((".KS", ".KQ")) else symbol
             data = yf.download(ticker, period="1d", auto_adjust=True, progress=False)
             if data.empty:
                 ticker = f"{symbol}.KQ"

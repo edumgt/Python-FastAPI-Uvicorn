@@ -396,7 +396,8 @@ class TradeLogger:
 # ---------------------------------------------------------------------------
 
 def _demo() -> None:
-    import tempfile, os
+    import os
+    import tempfile
     db_path = os.path.join(tempfile.gettempdir(), "demo_trading.db")
     db = TradeLogger(db_path)
 

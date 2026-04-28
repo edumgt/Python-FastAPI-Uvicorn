@@ -105,10 +105,13 @@ class TelegramNotifier:
 
     async def _async_send(self, message: str) -> None:
         bot = telegram.Bot(token=self.token)
+        # HTML 특수문자 이스케이프 후 전송 (HTML 인젝션 방지)
+        from html import escape
+        safe_message = escape(message, quote=False)
         await bot.send_message(
             chat_id=self.chat_id,
-            text=message,
-            parse_mode="HTML",
+            text=safe_message,
+            parse_mode=None,   # 이스케이프된 평문 전송
         )
 
     # ------------------------------------------------------------------

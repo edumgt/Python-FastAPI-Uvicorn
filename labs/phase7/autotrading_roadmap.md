@@ -665,15 +665,13 @@ rm = RiskManager(
 ## 📦 전체 패키지 설치 명령
 
 ```bash
-pip install \
-  alpaca-py \
-  pykiwoom \          # Windows 전용 (키움증권)
-  yfinance \
-  pandas numpy \
-  scikit-learn xgboost joblib \
-  python-telegram-bot \
-  python-dotenv \
-  apscheduler
+# 공통 패키지
+pip install alpaca-py yfinance pandas numpy \
+            scikit-learn xgboost joblib \
+            python-telegram-bot python-dotenv apscheduler
+
+# Windows 전용 (키움증권 OpenAPI+)
+pip install pykiwoom
 ```
 
 ---

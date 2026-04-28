@@ -283,10 +283,13 @@ class RiskManager:
     # ------------------------------------------------------------------
 
     def _halt(self, reason: str) -> None:
-        if not self._is_halted:
-            self._is_halted   = True
-            self._halt_reason = reason
-            logger.critical("🚨 거래 시스템 정지: %s", reason)
+        if self._is_halted:
+            logger.warning("이미 정지 상태 (기존 사유: %s). 새 사유 무시: %s",
+                           self._halt_reason, reason)
+            return
+        self._is_halted   = True
+        self._halt_reason = reason
+        logger.critical("🚨 거래 시스템 정지: %s", reason)
 
     def _resume(self, reason: str = "") -> None:
         self._is_halted   = False
