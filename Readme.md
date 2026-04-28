@@ -1,118 +1,142 @@
-# Python-001 기술 스택 가이드
+# 🐍 Python → FastAPI → Uvicorn 학습 프로젝트
 
-이 저장소는 **Python 기초 자료구조 실습 + 간단한 FastAPI 서버 + 파일 자동화 예제**를 함께 담은 학습용 프로젝트입니다.
+> **Python 기초부터 FastAPI 백엔드, 금융 데이터 분석까지** — 총 150일(1,200시간) 커리큘럼 기반 학습 저장소입니다.
 
----
-
-## 1) 핵심 언어 / 런타임
-
-- **Python 3.x (권장: 3.10 이상, 실사용 예시는 3.13 포함)**
-  - `venv` 가상환경을 사용해 프로젝트 의존성을 분리합니다.
-  - 기본 문법(함수, 리스트/딕셔너리/셋, JSON 처리)을 중심으로 구성되어 있습니다.
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-latest-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
+[![Uvicorn](https://img.shields.io/badge/Uvicorn-ASGI-4c4c4c)](https://www.uvicorn.org/)
 
 ---
 
-## 2) 백엔드 웹 프레임워크
+## 📌 프로젝트 소개
 
-- **FastAPI**
-  - `app.py`에서 REST API를 구성합니다.
-  - 비동기 엔드포인트(`async def`) 기반으로 간단한 데이터 응답을 제공합니다.
+이 저장소는 **Python 입문자부터 백엔드 주니어 개발자**를 목표 대상으로 하는 단계별 실습 프로젝트입니다.  
+루트 디렉터리에는 초기 실습 예제 파일들이, `labs/` 디렉터리에는 Phase별 LAB 자료가 포함되어 있습니다.
 
-- **Uvicorn (ASGI 서버)**
-  - FastAPI 앱 실행 서버입니다.
-  - 개발 모드에서 `--reload` 옵션을 사용해 코드 변경 시 자동 재시작이 가능합니다.
-
-### 제공 API 엔드포인트
-
-- `GET /` : Hello 메시지 반환
-- `GET /user` : `mydata.py`에서 만든 dict 데이터 반환
-- `GET /fruits` : `hashtest.py`의 set 처리 결과 반환
+| 항목 | 내용 |
+|------|------|
+| 대상 | Python 입문자 ~ 백엔드 주니어 개발자 / 금융 데이터 분석 입문자 |
+| 구성 | 하루 8시간 × 150일 = **1,200시간** |
+| 운영 | 이론 강의(2h) + 실습 LAB(4h) + 과제 리뷰(2h) |
 
 ---
 
-## 3) 데이터 포맷 / 저장 방식
+## 📋 Phase 구조 개요
 
-- **JSON 중심 데이터 처리**
-  - `json` 표준 라이브러리로 직렬화/역직렬화 처리
-  - `users.json`, `loginusers.json` 파일을 이용한 간단한 로그인 상태 저장
+| Phase | 기간 | 주제 |
+|-------|------|------|
+| Phase 1 | Day 01 – 20 | Python 완전 기초 (문법·자료형·함수·파일 I/O) |
+| Phase 2 | Day 21 – 40 | 자료구조 & 객체지향(OOP) |
+| Phase 3 | Day 41 – 60 | Python 고급 & 비동기 (asyncio·Pydantic·pytest) |
+| Phase 4 | Day 61 – 80 | FastAPI 기초 (라우팅·요청/응답·Swagger) |
+| Phase 5 | Day 81 – 100 | FastAPI 중급 (SQLAlchemy·JWT·캐싱·테스트) |
+| Phase 6 | Day 101 – 120 | FastAPI 고급 & 실전 프로젝트 (Docker·배포·CI/CD) |
+| Phase 7 | Day 121 – 150 | 금융 데이터 분석 & 머신러닝 (yfinance·pandas·LSTM) |
 
-- **파일 기반 저장 (로컬 파일 시스템)**
-  - DB 없이 JSON 파일을 직접 읽고 쓰는 구조
-  - 학습/프로토타이핑에 적합한 단순 persistence 방식
-
----
-
-## 4) 표준 라이브러리 사용 기술
-
-- **`json`**: dict ↔ JSON 문자열/파일 변환
-- **`os`**: 경로 처리 및 파일 존재 확인
-
-프로젝트는 외부 DB/ORM 없이, 파이썬 내장 모듈로도 충분히 기능을 구현하는 방식에 초점을 둡니다.
+> 📄 전체 일일 커리큘럼은 **[CURRICULUM.md](./CURRICULUM.md)** 를 참고하세요.
 
 ---
 
-## 5) 부가 자동화/문서 생성 스택
+## 📂 디렉터리 구조
 
-이 저장소에는 웹 API 외에도 문서 자동화 예제가 포함되어 있습니다.
-
-- **FPDF (`fpdf`)**
-  - `pdftest.py`에서 PDF를 생성합니다.
-  - 한글 출력용 폰트(`malgun.ttf`)를 직접 지정하는 방식입니다.
-
-- **pywin32 (`win32com`)**
-  - `hwptest.py`에서 한글(HWP) COM 자동화를 수행합니다.
-  - Windows/HWP 설치 환경에 의존적인 스크립트입니다.
-
-> 즉, 이 저장소는 “웹 백엔드 + 자료구조 학습 + 문서 자동화”가 혼합된 형태입니다.
+```
+Python-FastAPI-Uvicorn/
+├── app.py              # FastAPI 앱 (GET /, /user, /fruits)
+├── mydata.py           # dict 데이터 예제
+├── arraylist.py        # 리스트 자료구조 실습
+├── hashmap.py          # 해시맵(dict) 실습
+├── hashtest.py         # set 집합 연산 실습
+├── logintest.py        # JSON 파일 기반 로그인 시뮬레이션
+├── pdftest.py          # FPDF를 이용한 PDF 자동 생성 (한글 지원)
+├── hwptest.py          # pywin32를 이용한 HWP COM 자동화 (Windows 전용)
+├── users.json          # 사용자 데이터 (로그인 실습용)
+├── loginusers.json     # 로그인 상태 저장 파일
+├── requirements.txt    # 패키지 의존성
+├── CURRICULUM.md       # 150일 전체 커리큘럼
+└── labs/
+    ├── phase1/   (Day 01–20)  Python 완전 기초
+    ├── phase2/   (Day 21–40)  자료구조 & OOP
+    ├── phase3/   (Day 41–60)  Python 고급 & 비동기
+    ├── phase4/   (Day 61–80)  FastAPI 기초
+    ├── phase5/   (Day 81–100) FastAPI 중급
+    ├── phase6/   (Day 101–120) FastAPI 고급 & 실전 프로젝트
+    └── phase7/   (Day 121–150) 금융 데이터 분석 & 머신러닝
+```
 
 ---
 
-## 6) 의존성 관리
+## 🚀 빠른 시작
 
-- **requirements.txt** 사용
-  - `pip freeze > requirements.txt`로 패키지 버전을 고정하는 형태를 사용합니다.
-
-현재 파일 기준 핵심 패키지 예시:
-- `uvicorn`
-- `click`, `h11`, `colorama` (uvicorn 실행 관련 하위 의존성)
-
-> 참고: FastAPI/FPDF/pywin32 사용 코드가 존재하므로, 실행 환경에 따라 추가 설치가 필요할 수 있습니다.
-
----
-
-## 7) 실행/개발 환경
-
-## 가상환경 생성
+### 1. 가상환경 생성 및 활성화
 
 ```bash
-c:\Python310\python -m venv venv
-c:\Python313\python -m venv venv2
+python -m venv venv
+
+# macOS / Linux
+source venv/bin/activate
+
+# Windows
 venv\Scripts\activate
 ```
 
-## 서버 실행
+### 2. 패키지 설치
+
+```bash
+pip install fastapi uvicorn
+# 또는 저장된 의존성 일괄 설치
+pip install -r requirements.txt
+```
+
+### 3. FastAPI 서버 실행
 
 ```bash
 uvicorn app:app --reload
 ```
 
-## 설치 패키지 확인
+서버 실행 후 브라우저에서 확인:
+
+| URL | 설명 |
+|-----|------|
+| `http://127.0.0.1:8000/` | Hello 메시지 반환 |
+| `http://127.0.0.1:8000/user` | mydata.py dict 데이터 반환 |
+| `http://127.0.0.1:8000/fruits` | hashtest.py set 처리 결과 반환 |
+| `http://127.0.0.1:8000/docs` | Swagger UI 자동 문서 |
+
+---
+
+## 🛠️ 기술 스택
+
+| 구분 | 기술 |
+|------|------|
+| 언어 | Python 3.10+ |
+| 웹 프레임워크 | FastAPI |
+| ASGI 서버 | Uvicorn |
+| 데이터 저장 | JSON 파일 (DB 없이 학습 목적) |
+| 문서 자동화 | FPDF (PDF 생성), pywin32 (HWP, Windows 전용) |
+| 금융/ML (Phase 7) | yfinance, pandas, scikit-learn, TensorFlow/Keras |
+
+---
+
+## 📦 의존성 관리
 
 ```bash
+# 현재 설치된 패키지 확인
 pip list
+
+# requirements.txt 갱신
 pip freeze > requirements.txt
 ```
 
 ---
 
-## 8) 코드 성격 요약
+## 📊 평가 기준 (수강생 대상)
 
-- **학습 친화적 구조**: 자료구조(list/dict/set) 예제가 분리되어 있음
-- **실행 진입점 다중 구성**: API 서버, 콘솔 로그인, PDF/HWP 자동화 스크립트가 공존
-- **초기 프로젝트 특징**: 단순하고 직관적인 파일 구조, 빠른 실습에 적합
+| 항목 | 비중 | 설명 |
+|------|------|------|
+| 일일 LAB 과제 | 40% | 매일 제출하는 실습 결과물 |
+| Phase 미니 프로젝트 | 30% | Phase마다 진행하는 소규모 프로젝트 |
+| 최종 프로젝트 | 30% | FastAPI 실전 프로젝트 또는 금융 ML 프로젝트 |
 
 ---
 
-## 9) 기술 스택 한 줄 정리
-
-**Python + FastAPI + Uvicorn + JSON 파일 저장 + (FPDF / pywin32 자동화)** 기반의 학습형 프로젝트입니다.
+*본 저장소는 `edumgt/Python-FastAPI-Uvicorn` 기반 교육 커리큘럼을 위해 구성되었습니다.*
