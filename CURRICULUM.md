@@ -1,8 +1,8 @@
-# 🐍 Python → FastAPI → Uvicorn 120일 LAB 커리큘럼
+# 🐍 Python → FastAPI → Uvicorn → 금융 ML 150일 LAB 커리큘럼
 
-> **구성**: 하루 8시간 × 120일 = **960시간** 완성 로드맵  
+> **구성**: 하루 8시간 × 150일 = **1,200시간** 완성 로드맵  
 > **스타일**: 매일 이론 강의(2h) + 실습 LAB(4h) + 과제 리뷰(2h)  
-> **대상**: 프로그래밍 입문자 ~ 백엔드 주니어 개발자
+> **대상**: 프로그래밍 입문자 ~ 백엔드 주니어 개발자 + 금융 데이터 분석 입문자
 
 ---
 
@@ -16,6 +16,7 @@
 | **Phase 4** | Day 61 – 80 | FastAPI 기초 | 라우팅·요청/응답·미들웨어·Swagger |
 | **Phase 5** | Day 81 – 100 | FastAPI 중급 | SQLite·SQLAlchemy·JWT·pytest |
 | **Phase 6** | Day 101 – 120 | FastAPI 고급 & 실전 프로젝트 | WebSocket·Docker·배포·최종 프로젝트 |
+| **Phase 7** | Day 121 – 150 | 금융 데이터 분석 & 머신러닝 | yfinance·pandas·기술적분석·백테스트·LSTM |
 
 ---
 
@@ -181,6 +182,64 @@
 
 ---
 
+## 📅 Phase 7 – 금융 데이터 분석 & 머신러닝 (Day 121 ~ 150)
+
+> **구성**: 초급(Day 121–130) → 중급(Day 131–140) → 고급(Day 141–150)  
+> **목표**: "어떤 종목을 살까?"를 데이터와 AI로 판단하는 능력 습득
+
+---
+
+### 🟢 초급 – 금융 데이터 수집 & 정리 (Day 121 ~ 130)
+
+| Day | 주제 | LAB 파일 |
+|-----|------|----------|
+| 121 | 금융 데이터 개요 – 주식·ETF·암호화폐 기초 개념, 시장 구조 | `labs/phase7/day121_finance_intro.md` |
+| 122 | Yahoo Finance API – `yfinance`로 주가·거래량 데이터 수집 | `labs/phase7/day122_yfinance.md` |
+| 123 | 한국 증권 API – FinanceDataReader, KIS Open API 기초 | `labs/phase7/day123_korean_api.md` |
+| 124 | pandas 기초 – Series, DataFrame, 인덱싱, 슬라이싱 | `labs/phase7/day124_pandas_basic.md` |
+| 125 | pandas 시계열 – DatetimeIndex, resample, rolling, shift | `labs/phase7/day125_pandas_timeseries.md` |
+| 126 | 데이터 시각화 – matplotlib 주가 차트, plotly 인터랙티브 그래프 | `labs/phase7/day126_visualization.md` |
+| 127 | 데이터 정제 – 결측값 처리, 이상값 탐지, 데이터 정규화 | `labs/phase7/day127_data_cleaning.md` |
+| 128 | 기본적 분석 – PER·PBR·EPS·ROE·배당수익률 지표 계산 및 해석 | `labs/phase7/day128_fundamental.md` |
+| 129 | 미니 프로젝트 – 종목 기본 분석 리포트 자동화 (PDF 출력) | `labs/phase7/day129_project_report.md` |
+| 130 | 초급 종합 리뷰 & 코드 리뷰 세션 | `labs/phase7/day130_review_beginner.md` |
+
+---
+
+### 🟡 중급 – 기술적 분석 & 백테스트 (Day 131 ~ 140)
+
+| Day | 주제 | LAB 파일 |
+|-----|------|----------|
+| 131 | 이동평균선(MA) – SMA·EMA 구현, 골든/데드크로스 신호 | `labs/phase7/day131_ma.md` |
+| 132 | RSI (상대강도지수) – 계산 원리, 과매수·과매도 판단 | `labs/phase7/day132_rsi.md` |
+| 133 | MACD – MACD선·시그널선·히스토그램 구현 및 해석 | `labs/phase7/day133_macd.md` |
+| 134 | 추가 지표 – 볼린저밴드, 스토캐스틱, ATR | `labs/phase7/day134_extra_indicators.md` |
+| 135 | 백테스트 기초 – 전략 검증 프레임워크 설계, `bt` / `backtesting.py` 라이브러리 | `labs/phase7/day135_backtest_basic.md` |
+| 136 | 백테스트 심화 – 누적 수익률, 샤프지수, 최대낙폭(MDD) 계산 | `labs/phase7/day136_backtest_metrics.md` |
+| 137 | 자동매매 로직 – 매수·매도 신호 생성, 포지션 관리 기초 | `labs/phase7/day137_auto_trading.md` |
+| 138 | 포트폴리오 구성 – 자산 배분, 등비중·변동성 역비례 리밸런싱 | `labs/phase7/day138_portfolio.md` |
+| 139 | 미니 프로젝트 – MA + RSI 복합 전략 백테스트 및 성과 시각화 | `labs/phase7/day139_project_backtest.md` |
+| 140 | 중급 종합 리뷰 & 코드 리뷰 세션 | `labs/phase7/day140_review_intermediate.md` |
+
+---
+
+### 🔴 고급 – 머신러닝 & 전략 최적화 (Day 141 ~ 150)
+
+| Day | 주제 | LAB 파일 |
+|-----|------|----------|
+| 141 | 머신러닝 기초 – scikit-learn 파이프라인, 특성 엔지니어링, 데이터 분할 | `labs/phase7/day141_ml_basics.md` |
+| 142 | 회귀 모델 – Linear Regression·Random Forest로 주가 예측 | `labs/phase7/day142_regression.md` |
+| 143 | 분류 모델 – Logistic Regression·XGBoost로 상승/하락 예측 | `labs/phase7/day143_classification.md` |
+| 144 | 모델 평가 – 교차검증, 과적합 진단, 혼동행렬, ROC-AUC | `labs/phase7/day144_model_evaluation.md` |
+| 145 | 시계열 분석 – 정상성 검정, ARIMA, 예측 구간 | `labs/phase7/day145_arima.md` |
+| 146 | 딥러닝 기초 – 신경망 개념, TensorFlow/Keras 환경 구성 | `labs/phase7/day146_dl_basics.md` |
+| 147 | LSTM 구현 – 시계열 주가 예측 모델 학습 및 평가 | `labs/phase7/day147_lstm.md` |
+| 148 | 전략 최적화 – 하이퍼파라미터 튜닝, 특성 중요도, Optuna | `labs/phase7/day148_optimization.md` |
+| 149 | 리스크 관리 – VaR(위험가치), 포지션 사이징, 손절·익절 전략 | `labs/phase7/day149_risk_management.md` |
+| 150 | 최종 프로젝트 – AI 기반 투자 분석 시스템 개발 & 발표 | `labs/phase7/day150_final_project.md` |
+
+---
+
 ## 🏗️ 일일 LAB 운영 방식
 
 ```
@@ -203,7 +262,11 @@ labs/
 ├── phase3/   (Day 41–60) Python 고급 & 비동기
 ├── phase4/   (Day 61–80) FastAPI 기초
 ├── phase5/   (Day 81–100) FastAPI 중급
-└── phase6/   (Day 101–120) FastAPI 고급 & 실전 프로젝트
+├── phase6/   (Day 101–120) FastAPI 고급 & 실전 프로젝트
+└── phase7/   (Day 121–150) 금융 데이터 분석 & 머신러닝
+    ├── 초급  Day 121–130  데이터 수집·정리 (yfinance, pandas, 기본적 분석)
+    ├── 중급  Day 131–140  기술적 분석·백테스트 (MA, RSI, MACD, 자동매매)
+    └── 고급  Day 141–150  머신러닝·전략 최적화 (회귀·분류·LSTM·리스크 관리)
 ```
 
 ---
@@ -216,10 +279,16 @@ python -m venv venv
 source venv/bin/activate        # macOS/Linux
 venv\Scripts\activate           # Windows
 
-# 핵심 패키지 설치
+# 핵심 패키지 설치 (Phase 1–6: FastAPI 스택)
 pip install fastapi uvicorn[standard] pydantic sqlalchemy alembic \
             python-jose passlib bcrypt httpx pytest pytest-asyncio \
             python-dotenv pydantic-settings fpdf2
+
+# Phase 7 추가 패키지 설치 (금융 데이터 분석 & 머신러닝)
+pip install yfinance FinanceDataReader pandas numpy matplotlib plotly \
+            scikit-learn xgboost optuna \
+            tensorflow keras \
+            backtesting bt statsmodels
 ```
 
 ---
@@ -230,7 +299,7 @@ pip install fastapi uvicorn[standard] pydantic sqlalchemy alembic \
 |------|------|------|
 | 일일 LAB 과제 | 40% | 매일 제출하는 실습 결과물 |
 | Phase 미니 프로젝트 | 30% | Phase마다 진행하는 소규모 프로젝트 |
-| 최종 프로젝트 | 30% | Day 113–120 개발·발표 |
+| 최종 프로젝트 | 30% | Day 113–120 (FastAPI) 또는 Day 141–150 (금융 ML) 개발·발표 |
 
 ---
 
