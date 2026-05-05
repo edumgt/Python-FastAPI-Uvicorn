@@ -139,4 +139,225 @@ pip freeze > requirements.txt
 
 ---
 
+## 📈 Phase 7 – 금융 데이터 분석 & 머신러닝 실행 결과
+
+> **Day 121 – 150** | yfinance · pandas · 기술적 지표 · 백테스트 · scikit-learn · LSTM
+
+### Day 121 – 수익률 & 변동성 계산기
+
+```
+=== 수익률 계산기 ===
+단순 수익률:  6.00%
+누적 수익률:  6.00%
+로그 수익률:  ['0.0392', '-0.0194', '0.0755', '-0.0370']
+
+=== 변동성 계산 ===
+일별 변동성:  0.0497
+연간 변동성:  0.7891  (78.91%)
+최고가: 56,000원 | 최저가: 50,000원 | 범위: 6,000원
+
+=== 금융 용어 사전 ===
+[OHLCV] Open(시가)·High(고가)·Low(저가)·Close(종가)·Volume(거래량)
+[PER]   주가수익비율 = 주가 / EPS (낮을수록 저평가)
+[RSI]   상대강도지수 – 0~100, 70 이상 과매수·30 이하 과매도
+[MACD]  이동평균 수렴·발산 – 추세 전환 신호 지표
+[MDD]   최대낙폭 – 고점 대비 최대 하락률
+```
+
+![Day 121 – 수익률 계산 결과](docs/phase7/day121_returns.png)
+
+---
+
+### Day 122 – yfinance OHLCV 데이터 다운로드
+
+```python
+import yfinance as yf
+
+# 단일 종목 – Apple
+aapl = yf.Ticker("AAPL")
+df = aapl.history(period="6mo")   # 최근 6개월 OHLCV
+
+# 한국 주식 – 삼성전자
+samsung = yf.Ticker("005930.KS")
+
+# 멀티 티커 한 번에
+tickers = yf.download(["AAPL", "MSFT", "GOOGL"], period="1y")
+```
+
+```
+총 120행 데이터  |  컬럼: [Open, High, Low, Close, Volume]
+기간: 2023-11-01 ~ 2024-05-31
+              Open        High        Low     Close       Volume
+2024-05-27  189.95  190.46  188.37  189.06   59,161,408
+2024-05-28  189.06  190.04  187.59  187.77  102,374,647
+2024-05-29  187.77  187.95  185.29  185.99  112,242,810
+2024-05-30  185.99  191.88  185.42  191.04   87,214,417
+2024-05-31  191.04  193.59  189.70  192.26   70,353,727
+```
+
+![Day 122 – OHLCV 차트](docs/phase7/day122_ohlcv.png)
+
+---
+
+### Day 131 – 이동평균선 (SMA & EMA)
+
+```python
+# SMA 계산
+for w in [5, 20, 60]:
+    df[f"SMA{w}"] = df["Close"].rolling(window=w).mean()
+
+# EMA 계산
+for s in [12, 26]:
+    df[f"EMA{s}"] = df["Close"].ewm(span=s, adjust=False).mean()
+```
+
+**SMA vs EMA 비교 차트**
+
+![Day 131 – SMA & EMA 비교](docs/phase7/day131_ma_comparison.png)
+
+**골든크로스 / 데드크로스 신호 탐지**
+
+```
+골든크로스 발생: 14회
+데드크로스 발생: 13회
+```
+
+![Day 131 – 골든/데드크로스](docs/phase7/day131_cross_signals.png)
+
+**MA 전략 vs Buy & Hold (2년)**
+
+```
+Buy & Hold 수익률:   +27.19%
+MA5/MA20 전략 수익률: +12.25%
+```
+
+![Day 131 – MA 전략 수익률 비교](docs/phase7/day131_ma_strategy.png)
+
+---
+
+### Day 132 – RSI (상대강도지수)
+
+```python
+def compute_rsi(close: pd.Series, period: int = 14) -> pd.Series:
+    delta    = close.diff()
+    gain     = delta.clip(lower=0)
+    loss     = (-delta).clip(lower=0)
+    avg_gain = gain.ewm(alpha=1/period, adjust=False).mean()
+    avg_loss = loss.ewm(alpha=1/period, adjust=False).mean()
+    rs       = avg_gain / avg_loss
+    return 100 - (100 / (1 + rs))
+```
+
+```
+RSI 기초 통계:
+  count    236.00
+  mean      50.37
+  std       13.82
+  min       20.14
+  25%       40.02
+  75%       60.78
+  max       79.31
+
+과매수(RSI>70): 14일  |  과매도(RSI<30): 14일
+```
+
+![Day 132 – RSI 차트](docs/phase7/day132_rsi_chart.png)
+
+**RSI 전략 vs Buy & Hold (5년)**
+
+```
+Buy & Hold 수익률:  +217.11%
+RSI 전략 수익률:     +28.64%
+```
+
+![Day 132 – RSI 전략 수익률 비교](docs/phase7/day132_rsi_strategy.png)
+
+---
+
+### Day 133 – MACD (이동평균 수렴·발산)
+
+```python
+def compute_macd(close, fast=12, slow=26, signal=9):
+    ema_fast    = close.ewm(span=fast,   adjust=False).mean()
+    ema_slow    = close.ewm(span=slow,   adjust=False).mean()
+    macd_line   = ema_fast - ema_slow
+    signal_line = macd_line.ewm(span=signal, adjust=False).mean()
+    histogram   = macd_line - signal_line
+    return macd_line, signal_line, histogram
+```
+
+![Day 133 – MACD 차트](docs/phase7/day133_macd_chart.png)
+
+**MACD 크로스오버 전략 vs Buy & Hold (5년)**
+
+```
+매수 신호:  52회  |  매도 신호:  51회
+Buy & Hold 수익률:   +216.63%
+MACD 전략 수익률:    +108.41%
+```
+
+![Day 133 – MACD 전략 수익률 비교](docs/phase7/day133_macd_strategy.png)
+
+---
+
+### Day 135 – 백테스트 기초
+
+```
+총 거래 횟수: 16회
+승률: 50.0%
+```
+
+![Day 135 – 백테스트 결과](docs/phase7/day135_backtest.png)
+
+---
+
+### Day 141–144 – 머신러닝 기초 & 분류 모델
+
+```python
+# 피처 엔지니어링
+features = ["Returns", "MA_Ratio", "RSI14", "Volatility"]
+
+# Random Forest 분류 (다음 날 주가 방향 예측)
+clf = RandomForestClassifier(n_estimators=100, random_state=42)
+clf.fit(X_train, y_train)
+accuracy = clf.score(X_test, y_test)   # ~53.5%
+```
+
+![Day 141-144 – ML 피처 중요도 & 혼동 행렬](docs/phase7/day141_ml_features.png)
+
+---
+
+### Day 147 – LSTM 주가 예측
+
+```python
+# Keras LSTM 모델 구성
+model = Sequential([
+    LSTM(64, return_sequences=True, input_shape=(seq_len, n_features)),
+    Dropout(0.2),
+    LSTM(32),
+    Dropout(0.2),
+    Dense(1)
+])
+model.compile(optimizer="adam", loss="mse")
+```
+
+```
+Train/Test split: 210일 / 90일
+RMSE: 3.56
+```
+
+![Day 147 – LSTM 주가 예측 결과](docs/phase7/day147_lstm_prediction.png)
+
+---
+
+## 📊 평가 기준 (수강생 대상)
+
+| 항목 | 비중 | 설명 |
+|------|------|------|
+| 일일 LAB 과제 | 40% | 매일 제출하는 실습 결과물 |
+| Phase 미니 프로젝트 | 30% | Phase마다 진행하는 소규모 프로젝트 |
+| 최종 프로젝트 | 30% | FastAPI 실전 프로젝트 또는 금융 ML 프로젝트 |
+
+---
+
 *본 저장소는 `edumgt/Python-FastAPI-Uvicorn` 기반 교육 커리큘럼을 위해 구성되었습니다.*
