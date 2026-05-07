@@ -153,3 +153,5 @@ print(person)
 ## 📚 참고자료
 
 - [str 메서드 공식 문서](https://docs.python.org/3/library/stdtypes.html#text-sequence-type-str)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day05+strings

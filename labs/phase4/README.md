@@ -542,3 +542,5 @@ async def root():
 | APIRouter 분리 | /5 |
 | CORS 미들웨어 | /5 |
 | **총점** | **/40** |
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+README

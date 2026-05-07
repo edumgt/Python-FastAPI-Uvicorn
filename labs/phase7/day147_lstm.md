@@ -269,3 +269,5 @@ plt.show()
 - [Keras LSTM 가이드](https://keras.io/api/layers/recurrent_layers/lstm/)
 - [Understanding LSTM – Colah's Blog](https://colah.github.io/posts/2015-08-Understanding-LSTMs/)
 - [TensorFlow 시계열 예측 튜토리얼](https://www.tensorflow.org/tutorials/structured_data/time_series)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day147+lstm

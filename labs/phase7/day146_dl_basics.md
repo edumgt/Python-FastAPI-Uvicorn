@@ -251,3 +251,5 @@ print(f"타겟 상승 비율: {y_train.mean()*100:.1f}%")
 - [TensorFlow 공식 튜토리얼](https://www.tensorflow.org/tutorials)
 - [Keras 공식 문서](https://keras.io/guides/)
 - [Deep Learning for Finance (O'Reilly)](https://www.oreilly.com/library/view/machine-learning-for/9781098115395/)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day146+dl+basics

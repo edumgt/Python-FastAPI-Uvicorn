@@ -203,3 +203,5 @@ plt.show()
 - [sklearn 전처리 문서](https://scikit-learn.org/stable/modules/preprocessing.html)
 - [pandas fillna](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.fillna.html)
 - [pandas interpolate](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.interpolate.html)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day127+data+cleaning

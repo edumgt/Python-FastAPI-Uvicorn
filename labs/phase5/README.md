@@ -457,3 +457,5 @@ FastAPI 라우터
 | pytest fixture/parametrize | /5 |
 | pydantic-settings .env | /5 |
 | **총점** | **/40** |
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+README

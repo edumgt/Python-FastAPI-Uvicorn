@@ -241,3 +241,5 @@ ps aux | grep scheduler.py
 - [alpaca-py GitHub](https://github.com/alpacahq/alpaca-py)
 - [AWS EC2 시작 가이드](https://docs.aws.amazon.com/ec2/latest/userguide/EC2_GetStarted.html)
 - [APScheduler 문서](https://apscheduler.readthedocs.io)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day137+alpaca+api

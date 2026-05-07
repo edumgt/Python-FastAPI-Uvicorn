@@ -154,3 +154,5 @@ for term, definition in loaded.items():
 - [KRX 한국거래소](https://www.krx.co.kr)
 - [Investopedia – OHLC](https://www.investopedia.com/terms/o/ohlc.asp)
 - [업비트 개발자 센터](https://docs.upbit.com)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day121+finance+intro

@@ -226,3 +226,5 @@ print(f"주문번호: {order.order_no} | 상태: {order.status}")
 - [pykiwoom GitHub](https://github.com/sharebook-kr/pykiwoom)
 - [KOA Studio 다운로드](https://www.kiwoom.com)
 - [키움 모의투자 신청](https://www.kiwoom.com/h/customer/service/VPaperTradingPage)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day137+kiwoom+api

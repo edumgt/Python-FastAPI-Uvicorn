@@ -158,3 +158,5 @@ print(f"Python 경로  : {sys.executable}")
 - [Python 공식 다운로드](https://www.python.org/downloads/)
 - [venv 공식 문서](https://docs.python.org/3/library/venv.html)
 - [VSCode Python 확장](https://marketplace.visualstudio.com/items?itemName=ms-python.python)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day01+setup

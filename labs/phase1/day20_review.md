@@ -218,3 +218,5 @@ books.json 파일에 도서 정보 저장
 - [ ] 도서관 관리 시스템 완성
 - [ ] 자기 평가 완료
 - [ ] Phase 2 예습 (클래스, OOP 개념 검색)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day20+review

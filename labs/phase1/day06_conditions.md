@@ -155,3 +155,5 @@ for a, op, b in operations:
 - [ ] 자판기 시뮬레이터 완성
 - [ ] `match-case` 계산기 완성
 - [ ] 로그인 검증기 과제 완성
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day06+conditions

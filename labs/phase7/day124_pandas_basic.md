@@ -169,3 +169,5 @@ print(f"평균 종가: {loaded['Close'].mean():.2f}")
 
 - [pandas 공식 문서](https://pandas.pydata.org/docs/)
 - [pandas 10분 빠른 시작](https://pandas.pydata.org/docs/user_guide/10min.html)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day124+pandas+basic

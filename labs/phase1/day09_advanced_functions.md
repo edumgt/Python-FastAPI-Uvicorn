@@ -176,3 +176,5 @@ print(apply_twice(lambda x: x * 2, 5))   # 20
 - [ ] `make_power` 함수 팩토리 완성
 - [ ] `map/filter/reduce` 활용
 - [ ] 유연한 통계 함수 과제 완성
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day09+advanced+functions

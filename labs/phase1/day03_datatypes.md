@@ -173,3 +173,5 @@ BMI = 22.86
 
 - [Python 내장 타입 공식 문서](https://docs.python.org/3/library/stdtypes.html)
 - [Python 네이밍 컨벤션 PEP 8](https://peps.python.org/pep-0008/#naming-conventions)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day03+datatypes

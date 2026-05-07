@@ -251,3 +251,5 @@ print(trade_df.to_string(index=False))
 - [Investopedia – Sharpe Ratio](https://www.investopedia.com/terms/s/sharperatio.asp)
 - [Investopedia – MDD](https://www.investopedia.com/terms/m/maximum-drawdown.asp)
 - [Investopedia – Sortino Ratio](https://www.investopedia.com/terms/s/sortinoratio.asp)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day136+backtest+metrics

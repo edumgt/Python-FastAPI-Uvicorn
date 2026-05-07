@@ -313,3 +313,5 @@ esac
 - [systemd 서비스 공식 문서](https://www.freedesktop.org/software/systemd/man/systemd.service.html)
 - [journalctl 사용법](https://www.man7.org/linux/man-pages/man1/journalctl.1.html)
 - [systemd 보안 옵션](https://www.freedesktop.org/software/systemd/man/systemd.exec.html)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day141+systemd

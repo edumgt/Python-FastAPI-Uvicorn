@@ -442,3 +442,5 @@ print("="*55)
 - [`trading/` 패키지 전체 문서](../../trading/__init__.py)
 - [Alpaca Live Trading 가이드](https://docs.alpaca.markets/docs/trading)
 - [AWS Cost Explorer](https://aws.amazon.com/aws-cost-management/aws-cost-explorer/) – EC2 비용 모니터링
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day150+final+project

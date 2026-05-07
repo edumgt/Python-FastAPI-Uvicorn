@@ -219,3 +219,5 @@ else:
 - [ ] 달력 및 생일 계산 완성
 - [ ] `sys.argv` CLI 도구 완성
 - [ ] 파일 백업 유틸리티 과제 완성
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day18+stdlib

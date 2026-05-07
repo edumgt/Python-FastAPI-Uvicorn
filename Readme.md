@@ -361,3 +361,5 @@ RMSE: 3.56
 ---
 
 *본 저장소는 `edumgt/Python-FastAPI-Uvicorn` 기반 교육 커리큘럼을 위해 구성되었습니다.*
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+Readme

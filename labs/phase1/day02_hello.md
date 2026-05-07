@@ -186,3 +186,5 @@ for name, qty, price in items:
 
 - [Python print() 공식 문서](https://docs.python.org/3/library/functions.html#print)
 - [f-string 치트시트](https://fstring.help/cheat/)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day02+hello

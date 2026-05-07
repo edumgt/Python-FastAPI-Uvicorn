@@ -182,3 +182,5 @@ print(f"\n90점 이상: {top}")
 - [ ] 단어 빈도 Top 10 분석 완성
 - [ ] 중첩 딕셔너리 학교 DB 처리 완성
 - [ ] JSON 상품 재고 관리 과제 완성
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day12+dict

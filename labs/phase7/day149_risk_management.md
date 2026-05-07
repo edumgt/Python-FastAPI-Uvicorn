@@ -283,3 +283,5 @@ plt.show()
 - [Investopedia – VaR](https://www.investopedia.com/terms/v/var.asp)
 - [Investopedia – Kelly Criterion](https://www.investopedia.com/articles/trading/04/091504.asp)
 - [Investopedia – Position Sizing](https://www.investopedia.com/terms/p/positionsizing.asp)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day149+risk+management

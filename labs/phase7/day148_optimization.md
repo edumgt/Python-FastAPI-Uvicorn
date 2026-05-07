@@ -270,3 +270,5 @@ plt.show()
 - [Optuna 공식 문서](https://optuna.readthedocs.io)
 - [sklearn permutation_importance](https://scikit-learn.org/stable/modules/permutation_importance.html)
 - [베이지안 최적화 이해](https://distill.pub/2020/bayesian-optimization/)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day148+optimization

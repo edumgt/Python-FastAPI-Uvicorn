@@ -234,3 +234,5 @@ plt.show()
 - [scikit-learn Pipeline](https://scikit-learn.org/stable/modules/compose.html)
 - [sklearn.model_selection.TimeSeriesSplit](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit.html)
 - [Advances in Financial Machine Learning – Marcos López de Prado](https://www.amazon.com/Advances-Financial-Machine-Learning-Marcos/dp/1119482089)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day141+ml+basics

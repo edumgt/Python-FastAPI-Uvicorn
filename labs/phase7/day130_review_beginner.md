@@ -192,3 +192,5 @@ def safe_collect(symbol: str) -> tuple[pd.DataFrame | None, dict]:
 - [pandas Cheat Sheet](https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf)
 - [matplotlib Gallery](https://matplotlib.org/stable/gallery/index.html)
 - [Investopedia 금융 사전](https://www.investopedia.com/financial-term-dictionary-4769738)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day130+review+beginner

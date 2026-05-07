@@ -236,3 +236,5 @@ day17_homework/
 - [ ] `utils/` 패키지 4파일 완성
 - [ ] 표준 라이브러리 random/statistics/itertools 실습
 - [ ] `day17_homework/` 패키지 과제 완성
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day17+modules

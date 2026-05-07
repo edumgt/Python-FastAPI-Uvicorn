@@ -223,3 +223,5 @@ except RuntimeError as e:
 - [ ] `raise ... from None` 사용
 - [ ] 재시도 데코레이터 완성
 - [ ] SafeFileProcessor 과제 완성
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day16+exceptions

@@ -182,3 +182,5 @@ print_matrix(transpose(A), "A의 전치")
 - [ ] `sorted()` + `key` 정렬 완성
 - [ ] 2차원 리스트 행렬 연산 완성
 - [ ] 성적표 생성기 과제 완성
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day10+list

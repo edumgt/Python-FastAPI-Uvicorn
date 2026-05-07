@@ -304,3 +304,5 @@ python -m memo_app delete 2
 - [ ] `CLI` add/list/show/search/tag/delete 완성
 - [ ] 최소 5개 이상 메모 추가 후 전 기능 테스트
 - [ ] 도전 기능 1가지 이상 완성
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day19+project+memo

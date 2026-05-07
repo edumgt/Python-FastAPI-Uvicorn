@@ -221,3 +221,5 @@ print(f"tensorflow:  {tensorflow.__version__}")
 print(f"statsmodels: {statsmodels.__version__}")
 print(f"optuna:      {optuna.__version__}")
 ```
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day140+review+intermediate

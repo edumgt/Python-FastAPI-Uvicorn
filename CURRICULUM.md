@@ -392,3 +392,5 @@ pip install alpaca-py \
 ---
 
 *본 커리큘럼은 `edumgt/Python-FastAPI-Uvicorn` 레포지토리 기반으로 구성되었습니다.*
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+CURRICULUM

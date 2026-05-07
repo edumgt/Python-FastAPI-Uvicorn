@@ -251,3 +251,5 @@ plt.show()
 - [XGBoost 공식 문서](https://xgboost.readthedocs.io)
 - [sklearn ROC Curve](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html)
 - [imbalanced-learn (SMOTE)](https://imbalanced-learn.org)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day143+classification

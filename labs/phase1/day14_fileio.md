@@ -200,3 +200,5 @@ for e in errors:
 - [ ] CSV 직접 파싱 완성
 - [ ] 로그 파일 생성·분석 완성
 - [ ] 성적 파일 처리기 과제 완성
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day14+fileio

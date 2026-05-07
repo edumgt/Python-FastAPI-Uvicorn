@@ -494,3 +494,5 @@ print([next(gen) for _ in range(10)])  # [0,1,1,2,3,5,8,13,21,34]
 | 이터레이터 / 제너레이터 | /5 |
 | 재귀 & 메모이제이션 | /5 |
 | **총점** | **/40** |
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+README
