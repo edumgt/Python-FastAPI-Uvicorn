@@ -716,3 +716,5 @@ pip install pykiwoom
 - [ ] **4주차**: SQLite DB 매매 기록 + 리스크 한도 자동 정지 동작 확인
 - [ ] **5주차**: systemd 서비스 등록 + CloudWatch 로그 확인 + 자동 백업 설정
 - [ ] **6주차**: Paper Trading 1개월 성과 분석 → 소액 실전 전환 여부 결정
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+autotrading+roadmap

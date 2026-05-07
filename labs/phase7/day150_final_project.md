@@ -327,3 +327,5 @@ async def portfolio_var(
 
 *🎓 Phase 7 금융 데이터 분석 & 머신러닝 과정 완료!*  
 *"데이터로 보고, AI로 판단하고, 리스크를 관리하라."*
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day150+final+project

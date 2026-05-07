@@ -212,3 +212,5 @@ plt.show()
 
 - [Investopedia – MACD](https://www.investopedia.com/terms/m/macd.asp)
 - [StockCharts – MACD 가이드](https://school.stockcharts.com/doku.php?id=technical_indicators:moving_average_convergence_divergence_macd)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day133+macd

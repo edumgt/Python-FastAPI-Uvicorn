@@ -202,3 +202,5 @@ for sym, info in sorted(results.items(), key=lambda x: -x[1]["accuracy"]):
 - [scikit-learn RandomForest](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html)
 - [시계열 교차검증](https://scikit-learn.org/stable/modules/cross_validation.html#time-series-split)
 - [특성 중요도 해석](https://scikit-learn.org/stable/modules/permutation_importance.html)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day132+random+forest

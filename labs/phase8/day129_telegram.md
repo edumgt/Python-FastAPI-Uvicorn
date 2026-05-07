@@ -263,3 +263,5 @@ tail -f logs/scheduler.log
 - [python-telegram-bot 공식 문서](https://docs.python-telegram-bot.org)
 - [BotFather 가이드](https://core.telegram.org/bots/features#botfather)
 - [APScheduler 문서](https://apscheduler.readthedocs.io)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day129+telegram

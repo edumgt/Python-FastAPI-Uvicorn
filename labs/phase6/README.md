@@ -567,3 +567,5 @@ railway up
 ---
 
 *축하합니다! 120일간의 여정을 완주하셨습니다! 🎉*
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+README

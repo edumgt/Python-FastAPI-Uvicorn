@@ -216,3 +216,5 @@ print(f"총 수익률: {(log_df['자산가치'].iloc[-1]/capital-1)*100:.2f}%")
 - [Investopedia – 포트폴리오 다양화](https://www.investopedia.com/terms/d/diversification.asp)
 - [Investopedia – 리밸런싱](https://www.investopedia.com/terms/r/rebalancing.asp)
 - [Modern Portfolio Theory](https://www.investopedia.com/terms/m/modernportfoliotheory.asp)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day138+portfolio

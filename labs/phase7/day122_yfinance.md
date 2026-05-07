@@ -167,3 +167,5 @@ print(df.to_string(index=False))
 - [yfinance 공식 GitHub](https://github.com/ranaroussi/yfinance)
 - [yfinance 문서](https://yfinance.readthedocs.io)
 - [Yahoo Finance 티커 검색](https://finance.yahoo.com)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day122+yfinance

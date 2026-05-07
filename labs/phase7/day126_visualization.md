@@ -197,3 +197,5 @@ plt.show()
 - [matplotlib 공식 문서](https://matplotlib.org/stable/index.html)
 - [plotly 공식 문서](https://plotly.com/python/)
 - [plotly 금융 차트 가이드](https://plotly.com/python/candlestick-charts/)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day126+visualization

@@ -243,3 +243,5 @@ def create_dashboard(results: dict, save_path: str = "strategy_dashboard.png"):
 
 - [Combining Technical Indicators – Investopedia](https://www.investopedia.com/articles/trading/11/using-macd-indicator.asp)
 - [backtesting.py 고급 사용법](https://kernc.github.io/backtesting.py/doc/backtesting/index.html)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day139+project+backtest

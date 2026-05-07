@@ -188,3 +188,5 @@ if income is not None and not income.empty:
 - [Investopedia – PER](https://www.investopedia.com/terms/p/price-earningsratio.asp)
 - [Investopedia – ROE](https://www.investopedia.com/terms/r/returnonequity.asp)
 - [yfinance financials](https://yfinance.readthedocs.io/en/stable/reference/yfinance.scrapers.financials.html)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day128+fundamental

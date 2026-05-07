@@ -226,3 +226,5 @@ print(db.keys())
 - [ ] 중첩 JSON 탐색·변환 완성
 - [ ] JsonDB 클래스 구현 완성
 - [ ] 날씨 API 파서 과제 완성
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day15+json

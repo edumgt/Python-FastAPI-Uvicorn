@@ -149,3 +149,5 @@ for (r, c), val in sorted(grid.items()):
 - [ ] `namedtuple` 학생 데이터 처리 완성
 - [ ] 튜플 vs 리스트 성능 비교 완성
 - [ ] RGB 색상 변환기 과제 완성
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day11+tuple

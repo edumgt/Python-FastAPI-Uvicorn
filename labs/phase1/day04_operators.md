@@ -159,3 +159,5 @@ print(f"a >> 1 = {(a >> 1):08b} ({a >> 1})")  # 오른쪽 시프트
 ## 📚 참고자료
 
 - [Python 연산자 우선순위](https://docs.python.org/3/reference/expressions.html#operator-precedence)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day04+operators

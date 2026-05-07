@@ -218,3 +218,5 @@ plt.show()
 
 - [Investopedia – RSI](https://www.investopedia.com/terms/r/rsi.asp)
 - [RSI 계산 원리 (Wilder)](https://school.stockcharts.com/doku.php?id=technical_indicators:relative_strength_index_rsi)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day132+rsi

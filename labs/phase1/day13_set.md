@@ -174,3 +174,5 @@ for user in users:
 - [ ] 중복 제거 순서 유지 함수 완성
 - [ ] Jaccard 유사도 추천 시스템 완성
 - [ ] 로또 시뮬레이터 과제 완성
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day13+set

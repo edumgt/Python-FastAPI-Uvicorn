@@ -278,3 +278,5 @@ with patch("trading.risk_manager.date") as mock_date:
 - [`trading/risk_manager.py`](../../trading/risk_manager.py)
 - [Position Sizing (Investopedia)](https://www.investopedia.com/terms/p/position-sizing.asp)
 - [MDD 이해](https://www.investopedia.com/terms/m/maximum-drawdown.asp)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day137+daily+loss+limit

@@ -284,3 +284,5 @@ for symbol in watchlist:
 - [KIS Open API – 모의투자 주문](https://apiportal.koreainvestment.com)
 - [APScheduler 공식 문서](https://apscheduler.readthedocs.io)
 - [Investopedia – Stop-Loss](https://www.investopedia.com/terms/s/stop-lossorder.asp)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day137+auto+trading

@@ -214,3 +214,5 @@ print(f"\nATR 최근 5일:\n{df['ATR14'].tail().round(2)}")
 - [Investopedia – 볼린저밴드](https://www.investopedia.com/terms/b/bollingerbands.asp)
 - [Investopedia – 스토캐스틱](https://www.investopedia.com/terms/s/stochasticoscillator.asp)
 - [Investopedia – ATR](https://www.investopedia.com/terms/a/atr.asp)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day134+extra+indicators

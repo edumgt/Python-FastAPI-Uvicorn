@@ -228,3 +228,5 @@ print(f"\nRMSE: {rmse:.2f}  |  MAPE: {mape:.2f}%")
 - [statsmodels ARIMA](https://www.statsmodels.org/stable/generated/statsmodels.tsa.arima.model.ARIMA.html)
 - [pmdarima (auto_arima)](https://alkaline-ml.com/pmdarima/)
 - [Investopedia – ARIMA](https://www.investopedia.com/terms/a/autoregressive-integrated-moving-average-arima.asp)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day145+arima

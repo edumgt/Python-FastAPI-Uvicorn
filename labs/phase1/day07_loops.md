@@ -146,3 +146,5 @@ print(f"{num}은(는) {'소수 ✅' if is_prime(num) else '소수 아님 ❌'}")
 - [ ] 패턴 출력 4종 완성
 - [ ] 소수 판별 함수 완성
 - [ ] FizzBuzz 확장판 완성
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day07+loops

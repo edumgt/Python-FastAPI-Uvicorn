@@ -183,3 +183,5 @@ print(f"\n삼성전자 현재가: {price_info.get('stck_prpr', 'N/A')}원")
 - [FinanceDataReader GitHub](https://github.com/FinanceData/FinanceDataReader)
 - [KIS Open API 문서](https://apiportal.koreainvestment.com)
 - [python-dotenv](https://pypi.org/project/python-dotenv/)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day123+korean+api

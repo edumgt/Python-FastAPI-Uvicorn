@@ -461,3 +461,5 @@ print(result, type(result))
 | logging 설정 | /5 |
 | 환경변수 관리 | /5 |
 | **총점** | **/40** |
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+README

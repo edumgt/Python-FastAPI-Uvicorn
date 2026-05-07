@@ -215,3 +215,5 @@ python check_packages.py
 - [AWS EC2 시작 가이드](https://docs.aws.amazon.com/ec2/latest/userguide/EC2_GetStarted.html)
 - [Alpaca 회원가입](https://app.alpaca.markets)
 - [alpaca-py 공식 문서](https://docs.alpaca.markets/docs/getting-started)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day121+ec2+setup

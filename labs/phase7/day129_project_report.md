@@ -250,3 +250,5 @@ print("\n✅ 모든 리포트 생성 완료!")
 - [fpdf2 공식 문서](https://pyfpdf.github.io/fpdf2/)
 - [matplotlib savefig](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.savefig.html)
 - [yfinance history](https://yfinance.readthedocs.io/en/stable/reference/yfinance.scrapers.history.html)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day129+project+report

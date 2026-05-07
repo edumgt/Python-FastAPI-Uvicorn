@@ -257,3 +257,5 @@ plt.show()
 - [sklearn Linear Models](https://scikit-learn.org/stable/modules/linear_model.html)
 - [sklearn Random Forest](https://scikit-learn.org/stable/modules/ensemble.html#forests-of-randomized-trees)
 - [Advances in Financial ML – Feature Engineering](https://www.mlfinlab.com)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day142+regression

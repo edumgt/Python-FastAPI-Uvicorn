@@ -160,3 +160,5 @@ print_report(data)
 - [ ] 온도 변환 테이블 출력
 - [ ] 절차형 코드 함수 분리 리팩터링 완성
 - [ ] 이자 계산기 과제 완성
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day08+functions

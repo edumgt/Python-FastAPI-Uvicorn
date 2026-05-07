@@ -227,3 +227,5 @@ print(f"검증 수익률:   {test_cum*100:.2f}%")
 - [backtesting.py 공식 문서](https://kernc.github.io/backtesting.py/)
 - [Investopedia – 백테스트](https://www.investopedia.com/terms/b/backtesting.asp)
 - [Look-Ahead Bias 설명](https://www.investopedia.com/terms/l/lookaheadbias.asp)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day135+backtest+basic

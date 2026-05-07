@@ -165,3 +165,5 @@ print(f"\n결측값 제거 후: {len(df_clean)}행")
 - [pandas 시계열 가이드](https://pandas.pydata.org/docs/user_guide/timeseries.html)
 - [pandas resample](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.resample.html)
 - [pandas rolling](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.rolling.html)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day125+pandas+timeseries

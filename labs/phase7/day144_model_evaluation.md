@@ -232,3 +232,5 @@ print(pd.DataFrame(report_rows).to_string(index=False))
 - [sklearn TimeSeriesSplit](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit.html)
 - [sklearn Learning Curve](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.learning_curve.html)
 - [sklearn Confusion Matrix](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day144+model+evaluation

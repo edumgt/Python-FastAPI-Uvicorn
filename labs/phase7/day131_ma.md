@@ -204,3 +204,5 @@ plt.show()
 - [Investopedia – Moving Average](https://www.investopedia.com/terms/m/movingaverage.asp)
 - [Investopedia – Golden Cross](https://www.investopedia.com/terms/g/goldencross.asp)
 - [pandas ewm](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.ewm.html)
+
+🔎 유튜브 관련 영상 검색: https://www.youtube.com/results?search_query=python+trading+day131+ma
