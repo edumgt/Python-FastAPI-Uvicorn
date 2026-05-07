@@ -34,8 +34,8 @@ def main():
     for fruit_name in fruits:
         # 현재 요소 문자열 자체를 출력한다.
         print("Fruit:", fruit_name)
-        # 현재 요소 문자열 길이를 계산해 출력한다.
-        print("Length:", len(fruit_name))
+        # 현재 요소 문자열 길이를 계산해 기존 출력 포맷(Fruit:)으로 출력한다.
+        print("Fruit:", len(fruit_name))
 
     # Update 섹션 시작을 구분선으로 표시한다.
     # -----------------------------
