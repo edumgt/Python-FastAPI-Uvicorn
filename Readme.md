@@ -41,14 +41,6 @@
 
 ```
 Python-FastAPI-Uvicorn/
-├── app.py              # FastAPI 앱 (GET /, /user, /fruits)
-├── mydata.py           # dict 데이터 예제
-├── arraylist.py        # 리스트 자료구조 실습
-├── hashmap.py          # 해시맵(dict) 실습
-├── hashtest.py         # set 집합 연산 실습
-├── logintest.py        # JSON 파일 기반 로그인 시뮬레이션
-├── pdftest.py          # FPDF를 이용한 PDF 자동 생성 (한글 지원)
-├── hwptest.py          # pywin32를 이용한 HWP COM 자동화 (Windows 전용)
 ├── users.json          # 사용자 데이터 (로그인 실습용)
 ├── loginusers.json     # 로그인 상태 저장 파일
 ├── requirements.txt    # 패키지 의존성
@@ -56,8 +48,16 @@ Python-FastAPI-Uvicorn/
 └── labs/
     ├── phase1/   (Day 01–20)  Python 완전 기초
     ├── phase2/   (Day 21–40)  자료구조 & OOP
+    │   ├── arraylist.py       # 리스트 자료구조 실습
+    │   └── hashmap.py         # 해시맵(dict) 실습
     ├── phase3/   (Day 41–60)  Python 고급 & 비동기
+    │   ├── logintest.py       # JSON 파일 기반 로그인 시뮬레이션
+    │   ├── pdftest.py         # FPDF를 이용한 PDF 자동 생성 (한글 지원)
+    │   └── hwptest.py         # pywin32를 이용한 HWP COM 자동화 (Windows 전용)
     ├── phase4/   (Day 61–80)  FastAPI 기초
+    │   ├── app.py             # FastAPI 앱 (GET /, /user, /fruits)
+    │   ├── mydata.py          # dict 데이터 예제
+    │   └── hashtest.py        # set 집합 연산 실습
     ├── phase5/   (Day 81–100) FastAPI 중급
     ├── phase6/   (Day 101–120) FastAPI 고급 & 실전 프로젝트
     └── phase7/   (Day 121–150) 금융 데이터 분석 & 머신러닝
@@ -90,7 +90,7 @@ pip install -r requirements.txt
 ### 3. FastAPI 서버 실행
 
 ```bash
-uvicorn app:app --reload
+uvicorn labs.phase4.app:app --reload
 ```
 
 서버 실행 후 브라우저에서 확인:
@@ -98,8 +98,8 @@ uvicorn app:app --reload
 | URL | 설명 |
 |-----|------|
 | `http://127.0.0.1:8000/` | Hello 메시지 반환 |
-| `http://127.0.0.1:8000/user` | mydata.py dict 데이터 반환 |
-| `http://127.0.0.1:8000/fruits` | hashtest.py set 처리 결과 반환 |
+| `http://127.0.0.1:8000/user` | labs/phase4/mydata.py dict 데이터 반환 |
+| `http://127.0.0.1:8000/fruits` | labs/phase4/hashtest.py set 처리 결과 반환 |
 | `http://127.0.0.1:8000/docs` | Swagger UI 자동 문서 |
 
 ---
