@@ -26,6 +26,7 @@ from api.routers import (
     stock_clustering,
     telegram_notifier,
     trade_logger,
+    webapp,
 )
 
 app = FastAPI(
@@ -52,6 +53,7 @@ app.include_router(auto_trader.router)
 app.include_router(naver_crawler.router)
 app.include_router(stock_clustering.router)
 app.include_router(dl_strategy.router)
+app.include_router(webapp.router)
 
 # 정적 파일 (프론트엔드)
 _STATIC = Path(__file__).parent / "static"
