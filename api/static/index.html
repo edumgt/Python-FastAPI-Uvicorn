@@ -37,6 +37,9 @@
     <button onclick="showTab('ml')"       id="tab-ml"          class="tab-btn px-3 py-1.5 rounded text-sm font-medium whitespace-nowrap transition">🤖 ML Strategy</button>
     <button onclick="showTab('telegram')" id="tab-telegram"    class="tab-btn px-3 py-1.5 rounded text-sm font-medium whitespace-nowrap transition">✈️ Telegram</button>
     <button onclick="showTab('auto')"     id="tab-auto"        class="tab-btn px-3 py-1.5 rounded text-sm font-medium whitespace-nowrap transition">⚙️ Auto Trader</button>
+    <button onclick="showTab('naver')"    id="tab-naver"       class="tab-btn px-3 py-1.5 rounded text-sm font-medium whitespace-nowrap transition">📰 네이버 크롤러</button>
+    <button onclick="showTab('cluster')"  id="tab-cluster"     class="tab-btn px-3 py-1.5 rounded text-sm font-medium whitespace-nowrap transition">🔵 군집화</button>
+    <button onclick="showTab('dl')"       id="tab-dl"          class="tab-btn px-3 py-1.5 rounded text-sm font-medium whitespace-nowrap transition">🧠 딥러닝</button>
   </div>
 </nav>
 
@@ -764,6 +767,187 @@
     </div>
   </section>
 
+  <!-- ═══════════════════ NAVER CRAWLER ═══════════════════ -->
+  <section id="section-naver" class="hidden">
+    <h2 class="text-lg font-bold text-gray-800 mb-4">📰 네이버 금융 크롤러 – 국내 주가 데이터 수집</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+      <!-- OHLCV 조회 -->
+      <div class="bg-white rounded-lg shadow p-4">
+        <h3 class="font-semibold text-gray-700 mb-1">GET /api/naver/ohlcv/{ticker}</h3>
+        <p class="text-xs text-gray-400 mb-3">종목 일별 OHLCV 시세 수집 (네이버 금융)</p>
+        <form onsubmit="getReqPath(event,'/api/naver/ohlcv/','naver-ohlcv-ticker','naver-ohlcv-res',{pages:'naver-ohlcv-pages',start_date:'naver-ohlcv-start',end_date:'naver-ohlcv-end'})">
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <label class="text-xs text-gray-600">종목코드<input id="naver-ohlcv-ticker" value="005930" class="input mt-0.5" placeholder="예: 005930"/></label>
+            <label class="text-xs text-gray-600">페이지 수<input id="naver-ohlcv-pages" type="number" value="5" class="input mt-0.5"/></label>
+            <label class="text-xs text-gray-600">시작일<input id="naver-ohlcv-start" value="" placeholder="YYYY.MM.DD" class="input mt-0.5"/></label>
+            <label class="text-xs text-gray-600">종료일<input id="naver-ohlcv-end" value="" placeholder="YYYY.MM.DD" class="input mt-0.5"/></label>
+          </div>
+          <button type="submit" class="btn">데이터 수집</button>
+        </form>
+        <pre id="naver-ohlcv-res" class="response-box hidden"></pre>
+      </div>
+
+      <!-- 종목 정보 -->
+      <div class="bg-white rounded-lg shadow p-4">
+        <h3 class="font-semibold text-gray-700 mb-1">GET /api/naver/info/{ticker}</h3>
+        <p class="text-xs text-gray-400 mb-3">종목 기본 정보 조회 (현재가, 종목명 등)</p>
+        <form onsubmit="getReqPath(event,'/api/naver/info/','naver-info-ticker','naver-info-res',{})">
+          <div class="mb-3">
+            <label class="text-xs text-gray-600">종목코드<input id="naver-info-ticker" value="005930" class="input mt-0.5" placeholder="예: 000660"/></label>
+          </div>
+          <button type="submit" class="btn">종목 정보 조회</button>
+        </form>
+        <pre id="naver-info-res" class="response-box hidden"></pre>
+      </div>
+
+      <!-- 시장 목록 -->
+      <div class="bg-white rounded-lg shadow p-4">
+        <h3 class="font-semibold text-gray-700 mb-1">GET /api/naver/market</h3>
+        <p class="text-xs text-gray-400 mb-3">KOSPI / KOSDAQ 시가총액 상위 종목 목록</p>
+        <form onsubmit="getReqWithParam(event,'/api/naver/market','naver-mkt-res')">
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <label class="text-xs text-gray-600">시장<select name="market" class="input mt-0.5">
+              <option value="kospi">KOSPI</option>
+              <option value="kosdaq">KOSDAQ</option>
+            </select></label>
+            <label class="text-xs text-gray-600">페이지 수<input name="pages" type="number" value="2" class="input mt-0.5"/></label>
+          </div>
+          <button type="submit" class="btn">목록 조회</button>
+        </form>
+        <pre id="naver-mkt-res" class="response-box hidden"></pre>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════ STOCK CLUSTERING ═══════════════════ -->
+  <section id="section-cluster" class="hidden">
+    <h2 class="text-lg font-bold text-gray-800 mb-4">🔵 주식 군집화 – K-Means 기반 종목 분류</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+      <!-- 군집화 실행 -->
+      <div class="bg-white rounded-lg shadow p-4 md:col-span-2">
+        <h3 class="font-semibold text-gray-700 mb-1">POST /api/cluster/run</h3>
+        <p class="text-xs text-gray-400 mb-3">여러 종목을 군집화하여 수익률·변동성·모멘텀 기반으로 그룹 분류</p>
+        <form onsubmit="submitCluster(event,'cluster-run-res')">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
+            <label class="text-xs text-gray-600 md:col-span-2">종목코드 (쉼표 구분)
+              <input id="cluster-tickers" value="005930,000660,035420,051910,068270,005380,035720,207940,006400,003670" class="input mt-0.5"/>
+            </label>
+            <label class="text-xs text-gray-600">수집 페이지<input id="cluster-pages" type="number" value="5" class="input mt-0.5"/></label>
+            <label class="text-xs text-gray-600">군집 수<input id="cluster-k" type="number" value="4" min="2" max="10" class="input mt-0.5"/></label>
+            <label class="text-xs text-gray-600">방법<select id="cluster-method" class="input mt-0.5">
+              <option value="kmeans">K-Means</option>
+              <option value="hierarchical">계층적 군집화</option>
+            </select></label>
+          </div>
+          <button type="submit" class="btn">군집화 실행</button>
+        </form>
+        <pre id="cluster-run-res" class="response-box hidden"></pre>
+      </div>
+
+      <!-- 최적 k 탐색 -->
+      <div class="bg-white rounded-lg shadow p-4">
+        <h3 class="font-semibold text-gray-700 mb-1">POST /api/cluster/optimal-k</h3>
+        <p class="text-xs text-gray-400 mb-3">엘보우·실루엣 기법으로 최적 군집 수(k) 탐색</p>
+        <form onsubmit="submitOptimalK(event,'cluster-optk-res')">
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <label class="text-xs text-gray-600">종목코드 (쉼표 구분)<input id="optk-tickers" value="005930,000660,035420,051910,068270,005380,035720,207940,006400,003670" class="input mt-0.5"/></label>
+            <label class="text-xs text-gray-600">수집 페이지<input id="optk-pages" type="number" value="5" class="input mt-0.5"/></label>
+            <label class="text-xs text-gray-600">k 최소<input id="optk-min" type="number" value="2" class="input mt-0.5"/></label>
+            <label class="text-xs text-gray-600">k 최대<input id="optk-max" type="number" value="7" class="input mt-0.5"/></label>
+          </div>
+          <button type="submit" class="btn">최적 k 탐색</button>
+        </form>
+        <pre id="cluster-optk-res" class="response-box hidden"></pre>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════ DL STRATEGY ═══════════════════ -->
+  <section id="section-dl" class="hidden">
+    <h2 class="text-lg font-bold text-gray-800 mb-4">🧠 딥러닝 전략 – LSTM / MLP 주가 방향성 예측</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+      <!-- 모델 정보 -->
+      <div class="bg-white rounded-lg shadow p-4">
+        <h3 class="font-semibold text-gray-700 mb-1">GET /api/dl/info</h3>
+        <p class="text-xs text-gray-400 mb-3">현재 로드된 딥러닝 모델 정보</p>
+        <button onclick="getReq('/api/dl/info','dl-info-res')" class="btn">모델 정보</button>
+        <pre id="dl-info-res" class="response-box hidden"></pre>
+      </div>
+
+      <!-- 학습 -->
+      <div class="bg-white rounded-lg shadow p-4">
+        <h3 class="font-semibold text-gray-700 mb-1">POST /api/dl/train</h3>
+        <p class="text-xs text-gray-400 mb-3">LSTM(TF 필요) 또는 MLP(sklearn) 딥러닝 모델 학습</p>
+        <form onsubmit="submitForm(event,'POST','/api/dl/train','dl-train-res')">
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <label class="text-xs text-gray-600">종목코드<input name="ticker" value="005930" class="input mt-0.5"/></label>
+            <label class="text-xs text-gray-600">데이터 소스<select name="source" class="input mt-0.5">
+              <option value="naver">네이버 (국내)</option>
+              <option value="yfinance">yfinance (해외)</option>
+            </select></label>
+            <label class="text-xs text-gray-600">수집 페이지 (naver)<input name="pages" type="number" value="30" class="input mt-0.5"/></label>
+            <label class="text-xs text-gray-600">기간 (yfinance)<input name="period" value="3y" class="input mt-0.5"/></label>
+            <label class="text-xs text-gray-600">모델 타입<select name="model_type" class="input mt-0.5">
+              <option value="auto">auto (자동 선택)</option>
+              <option value="lstm">LSTM (TF 필요)</option>
+              <option value="mlp">MLP (sklearn)</option>
+            </select></label>
+            <label class="text-xs text-gray-600">시퀀스 길이<input name="seq_len" type="number" value="20" class="input mt-0.5"/></label>
+            <label class="text-xs text-gray-600">예측 기간(일)<input name="forward_days" type="number" value="5" class="input mt-0.5"/></label>
+            <label class="text-xs text-gray-600">임계값<input name="threshold" type="number" step="0.001" value="0.01" class="input mt-0.5"/></label>
+            <label class="text-xs text-gray-600">에폭 (LSTM)<input name="epochs" type="number" value="30" class="input mt-0.5"/></label>
+          </div>
+          <button type="submit" class="btn">딥러닝 학습</button>
+        </form>
+        <pre id="dl-train-res" class="response-box hidden"></pre>
+      </div>
+
+      <!-- 신호 예측 -->
+      <div class="bg-white rounded-lg shadow p-4">
+        <h3 class="font-semibold text-gray-700 mb-1">POST /api/dl/predict</h3>
+        <p class="text-xs text-gray-400 mb-3">학습 모델로 BUY / SELL / HOLD 신호 예측</p>
+        <form onsubmit="submitForm(event,'POST','/api/dl/predict','dl-pred-res')">
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <label class="text-xs text-gray-600">종목코드<input name="ticker" value="005930" class="input mt-0.5"/></label>
+            <label class="text-xs text-gray-600">소스<select name="source" class="input mt-0.5">
+              <option value="naver">네이버</option>
+              <option value="yfinance">yfinance</option>
+            </select></label>
+            <label class="text-xs text-gray-600">페이지 수<input name="pages" type="number" value="10" class="input mt-0.5"/></label>
+            <label class="text-xs text-gray-600">기간 (yfinance)<input name="period" value="6mo" class="input mt-0.5"/></label>
+          </div>
+          <button type="submit" class="btn">신호 예측</button>
+        </form>
+        <pre id="dl-pred-res" class="response-box hidden"></pre>
+      </div>
+
+      <!-- 확률 예측 -->
+      <div class="bg-white rounded-lg shadow p-4">
+        <h3 class="font-semibold text-gray-700 mb-1">POST /api/dl/predict-proba</h3>
+        <p class="text-xs text-gray-400 mb-3">상승·보합·하락 클래스별 확률 반환</p>
+        <form onsubmit="submitForm(event,'POST','/api/dl/predict-proba','dl-proba-res')">
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <label class="text-xs text-gray-600">종목코드<input name="ticker" value="005930" class="input mt-0.5"/></label>
+            <label class="text-xs text-gray-600">소스<select name="source" class="input mt-0.5">
+              <option value="naver">네이버</option>
+              <option value="yfinance">yfinance</option>
+            </select></label>
+            <label class="text-xs text-gray-600">페이지 수<input name="pages" type="number" value="10" class="input mt-0.5"/></label>
+            <label class="text-xs text-gray-600">기간 (yfinance)<input name="period" value="6mo" class="input mt-0.5"/></label>
+          </div>
+          <button type="submit" class="btn">확률 예측</button>
+        </form>
+        <pre id="dl-proba-res" class="response-box hidden"></pre>
+      </div>
+
+    </div>
+  </section>
+
 </main>
 
 <!-- ── Tailwind utility classes (styles applied via JS class manipulation) -->
@@ -805,7 +989,7 @@
 
 <script>
 // ─────────────────── Tab Navigation ───────────────────
-const TABS = ['risk','logger','kiwoom','alpaca','ml','telegram','auto'];
+const TABS = ['risk','logger','kiwoom','alpaca','ml','telegram','auto','naver','cluster','dl'];
 function showTab(name) {
   TABS.forEach(t => {
     document.getElementById('section-'+t).classList.add('hidden');
@@ -937,6 +1121,26 @@ function submitRunOnce(evt, resId) {
   const watchlist = document.getElementById('at-watchlist').value.split(',').map(s=>s.trim()).filter(Boolean);
   const delay = parseFloat(document.getElementById('at-delay').value) || 0.3;
   apiCall('POST', '/api/auto-trader/run-once', {watchlist, delay});
+}
+
+function submitCluster(evt, resId) {
+  evt.preventDefault();
+  currentResId = resId;
+  const tickers = document.getElementById('cluster-tickers').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const pages   = parseInt(document.getElementById('cluster-pages').value) || 5;
+  const n_clusters = parseInt(document.getElementById('cluster-k').value) || 4;
+  const method  = document.getElementById('cluster-method').value;
+  apiCall('POST', '/api/cluster/run', {tickers, pages, n_clusters, method});
+}
+
+function submitOptimalK(evt, resId) {
+  evt.preventDefault();
+  currentResId = resId;
+  const tickers = document.getElementById('optk-tickers').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const pages   = parseInt(document.getElementById('optk-pages').value) || 5;
+  const k_min   = parseInt(document.getElementById('optk-min').value) || 2;
+  const k_max   = parseInt(document.getElementById('optk-max').value) || 7;
+  apiCall('POST', '/api/cluster/optimal-k', {tickers, pages, k_min, k_max});
 }
 </script>
 

@@ -18,9 +18,12 @@ from fastapi.staticfiles import StaticFiles
 from api.routers import (
     alpaca,
     auto_trader,
+    dl_strategy,
     kiwoom,
     ml_strategy,
+    naver_crawler,
     risk_manager,
+    stock_clustering,
     telegram_notifier,
     trade_logger,
 )
@@ -46,6 +49,9 @@ app.include_router(kiwoom.router)
 app.include_router(alpaca.router)
 app.include_router(ml_strategy.router)
 app.include_router(auto_trader.router)
+app.include_router(naver_crawler.router)
+app.include_router(stock_clustering.router)
+app.include_router(dl_strategy.router)
 
 # 정적 파일 (프론트엔드)
 _STATIC = Path(__file__).parent / "static"
