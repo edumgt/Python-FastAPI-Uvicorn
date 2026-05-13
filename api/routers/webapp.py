@@ -462,6 +462,12 @@ def stock_forecast(req: StockForecastReq):
     네이버 금융(또는 yfinance)에서 데이터를 수집하고,
     최근 변동성 기반 예측 범위와 시나리오 분석을 반환합니다.
     """
+    # 예측 파라미터 상수
+    _TREND_WEIGHT = 0.3        # MA 차이에서 중심 예측값에 반영하는 가중치
+    _VOL_MULTIPLIER = 1.5      # 변동성에 곱해 ±예측 폭을 결정하는 배율
+    _CENTER_BAND = 0.005       # 중심값 표시용 ±0.5% 밴드
+    _TREND_THRESHOLD = 0.005   # 상승/하락 시나리오 판단 기준(0.5%)
+
     # ── 1. 데이터 수집 ─────────────────────────────────────────────────────
     df = _load_ohlcv(req.ticker, req.source, req.pages, req.period)
 
@@ -496,18 +502,23 @@ def stock_forecast(req: StockForecastReq):
     # ── 4. 변동성 기반 예측 범위 계산 ─────────────────────────────────────
     returns = close.pct_change().dropna()
     n_ret = len(returns)
-    recent_vol = float(returns.tail(20).std()) if n_ret >= 20 else float(returns.std() if n_ret > 1 else 0.01)
+    if n_ret >= 20:
+        recent_vol = float(returns.tail(20).std())
+    elif n_ret > 1:
+        recent_vol = float(returns.std())
+    else:
+        recent_vol = 0.01
 
     ma5 = float(close.tail(5).mean())
     ma20 = float(close.tail(20).mean()) if len(close) >= 20 else float(close.mean())
     trend_factor = (ma5 - ma20) / ma20 if ma20 else 0.0
 
-    center_pred = latest_close * (1.0 + trend_factor * 0.3)
-    range_delta = latest_close * recent_vol * 1.5
+    center_pred = latest_close * (1.0 + trend_factor * _TREND_WEIGHT)
+    range_delta = latest_close * recent_vol * _VOL_MULTIPLIER
     lower_pred = center_pred - range_delta
     upper_pred = center_pred + range_delta
-    center_low = center_pred * 0.995
-    center_high = center_pred * 1.005
+    center_low = center_pred * (1.0 - _CENTER_BAND)
+    center_high = center_pred * (1.0 + _CENTER_BAND)
 
     # ── 5. 날짜 계산 ───────────────────────────────────────────────────────
     if "Date" in df.columns:
@@ -523,9 +534,9 @@ def stock_forecast(req: StockForecastReq):
     tomorrow_str = tomorrow_ts.strftime("%Y년 %m월 %d일")
 
     # ── 6. 시나리오 판단 ───────────────────────────────────────────────────
-    if trend_factor > 0.005:
+    if trend_factor > _TREND_THRESHOLD:
         up_prob_label = "높음"
-    elif trend_factor < -0.005:
+    elif trend_factor < -_TREND_THRESHOLD:
         up_prob_label = "낮음"
     else:
         up_prob_label = "중간"
@@ -542,19 +553,30 @@ def stock_forecast(req: StockForecastReq):
         {"label": "예측 대상일", "value": tomorrow_str},
     ]
 
+    header_note = (
+        f"{stock_name} (종목코드: {req.ticker})의 내일({tomorrow_str}) 주가 예측은 "
+        "불확실성이 높습니다. ETF 주가는 기초지수 성과, 미국 증시 움직임, "
+        "환율(원/달러), 시장 심리 등에 따라 크게 변동할 수 있습니다."
+    )
+    disclaimer_note = (
+        "중요 주의사항: 주가 예측은 본질적으로 불확실하며, 과거 패턴이나 "
+        "현재 추세가 미래를 보장하지 않습니다. 이는 투자 조언이 아니며, "
+        "실제 투자 결정은 본인 책임 하에 전문가 상담이나 최신 시장 정보를 "
+        "바탕으로 하시기 바랍니다."
+    )
     notes = [
-        f"{stock_name} (종목코드: {req.ticker})의 내일({tomorrow_str}) 주가 예측은 불확실성이 높습니다. ETF 주가는 기초지수 성과, 미국 증시 움직임, 환율(원/달러), 시장 심리 등에 따라 크게 변동할 수 있습니다.",
+        header_note,
         f"최근 주가 정보 ({today_str} 장 마감 기준)",
         f"  종가: 약 {latest_close:,.0f}원 ({'+' if change >= 0 else ''}{change:,.0f}원, {'+' if change_pct >= 0 else ''}{change_pct:.2f}%)",
         f"  최근 범위: 52주 최고 {high_52w:,.0f}원 / 최저 {low_52w:,.0f}원 (현재 위치: 52주 범위의 {pos_52w:.0f}%)",
         f"  거래량: {latest_volume:,}주",
-        f"예측 범위 (단기 참고용)",
+        "예측 범위 (단기 참고용)",
         f"  내일 예상 범위: {lower_pred:,.0f} ~ {upper_pred:,.0f}원 정도 (중심값 약 {center_low:,.0f} ~ {center_high:,.0f}원)",
         f"  상승 시나리오 (확률 {up_prob_label}): 시장 강세, 기초지수 및 관련 섹터가 긍정적 움직임을 보이면 +1% 내외 상승 가능.",
         "  하락 시나리오: 시장 조정, 위험회피 심리 확대 또는 원화 강세 시 -1% 정도 하락 가능.",
         "  중립: 보합권에서 마감할 가능성도 높음 (변동성 낮은 ETF 특성).",
         "영향 요인: 기초지수 성과, 미국 증시(S&P 500·Nasdaq) 및 금융주 동향, 원/달러 환율 변동, 글로벌 리스크(지정학·매크로 데이터).",
-        "중요 주의사항: 주가 예측은 본질적으로 불확실하며, 과거 패턴이나 현재 추세가 미래를 보장하지 않습니다. 이는 투자 조언이 아니며, 실제 투자 결정은 본인 책임 하에 전문가 상담이나 최신 시장 정보를 바탕으로 하시기 바랍니다.",
+        disclaimer_note,
     ]
 
     # ── 8. 차트 데이터 ─────────────────────────────────────────────────────
