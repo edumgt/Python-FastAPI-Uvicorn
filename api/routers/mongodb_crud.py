@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import logging
 import secrets
 from typing import Any
 
@@ -14,6 +15,7 @@ from pydantic import BaseModel, Field
 from api.mongodb_store import PyMongoError, repo
 
 router = APIRouter(prefix="/api/mongo", tags=["MongoDB CRUD"])
+logger = logging.getLogger(__name__)
 
 
 class UserCreateReq(BaseModel):
@@ -104,7 +106,8 @@ def _guard():
     try:
         repo.ping()
     except PyMongoError as e:
-        raise HTTPException(status_code=503, detail=f"MongoDB 연결 실패: {e}")
+        logger.warning("MongoDB 연결 실패: %s", e)
+        raise HTTPException(status_code=503, detail="MongoDB 연결 실패")
 
 
 def _handle_id_error():

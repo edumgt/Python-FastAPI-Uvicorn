@@ -113,11 +113,14 @@ def crawl(req: CrawlReq):
 
     latest = df.tail(1).copy()
     latest["Date"] = latest["Date"].dt.strftime("%Y-%m-%d")
+    stock_info = dict(info)
+    if stock_info.get("error"):
+        stock_info["error"] = "종목 정보 조회 실패"
     response = {
         "ticker": req.ticker,
         "ohlcv_rows": len(df),
         "latest_ohlcv": latest.to_dict(orient="records")[0],
-        "stock_info": info,
+        "stock_info": stock_info,
         "market": req.market.upper(),
         "market_sample": market_df.head(10).to_dict(orient="records"),
     }
@@ -128,7 +131,7 @@ def crawl(req: CrawlReq):
             "pages": req.pages,
             "ohlcv_rows": len(df),
             "latest_ohlcv": response["latest_ohlcv"],
-            "stock_info": info,
+            "stock_info": stock_info,
             "market_sample": response["market_sample"],
         }
     )
