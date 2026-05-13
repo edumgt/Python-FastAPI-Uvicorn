@@ -2,10 +2,16 @@
 
 from __future__ import annotations
 
+import logging
+
 from fastapi import APIRouter, HTTPException
+from pymongo.errors import PyMongoError
 from pydantic import BaseModel, Field
 
+from api.mongodb_store import repo
+
 router = APIRouter(prefix="/api/webapp", tags=["WebApp Dashboard"])
+logger = logging.getLogger(__name__)
 
 
 class CrawlReq(BaseModel):
@@ -74,12 +80,30 @@ def _load_ohlcv(ticker: str, source: str, pages: int, period: str):
     return df
 
 
+def _save_crawl(payload: dict):
+    try:
+        repo.ping()
+        return repo.insert_one(repo.crawls, payload)
+    except PyMongoError as e:
+        logger.warning("MongoDB crawl 저장 실패: %s", e)
+        return None
+
+
+def _save_analysis(payload: dict):
+    try:
+        repo.ping()
+        return repo.insert_one(repo.analyses, payload)
+    except PyMongoError as e:
+        logger.warning("MongoDB analysis 저장 실패: %s", e)
+        return None
+
+
 @router.post("/crawl")
 def crawl(req: CrawlReq):
     try:
         from trading.naver_crawler import NaverFinanceCrawler, get_market_stocks
-    except ImportError as e:
-        raise HTTPException(status_code=503, detail=str(e))
+    except ImportError:
+        raise HTTPException(status_code=503, detail="크롤링 모듈을 불러올 수 없습니다.")
 
     crawler = NaverFinanceCrawler()
     df = crawler.get_daily_ohlcv(req.ticker, pages=req.pages)
@@ -90,14 +114,38 @@ def crawl(req: CrawlReq):
 
     latest = df.tail(1).copy()
     latest["Date"] = latest["Date"].dt.strftime("%Y-%m-%d")
-    return {
+    stock_info = {
+        "ticker": req.ticker,
+        "name": info.get("name", ""),
+        "price": info.get("price", ""),
+        "change": info.get("change", ""),
+        "rate": info.get("rate", ""),
+        "fetched_at": info.get("fetched_at", ""),
+    }
+    if "error" in info:
+        stock_info["error"] = "종목 정보 조회 실패(내부 로그 확인)"
+    response = {
         "ticker": req.ticker,
         "ohlcv_rows": len(df),
         "latest_ohlcv": latest.to_dict(orient="records")[0],
-        "stock_info": info,
+        "stock_info": stock_info,
         "market": req.market.upper(),
         "market_sample": market_df.head(10).to_dict(orient="records"),
     }
+    mongo_id = _save_crawl(
+        {
+            "ticker": req.ticker,
+            "market": req.market,
+            "pages": req.pages,
+            "ohlcv_rows": len(df),
+            "latest_ohlcv": response["latest_ohlcv"],
+            "stock_info": stock_info,
+            "market_sample": response["market_sample"],
+        }
+    )
+    if mongo_id:
+        response["mongo_id"] = mongo_id
+    return response
 
 
 @router.post("/cluster")
@@ -105,8 +153,8 @@ def cluster(req: ClusterReq):
     try:
         from trading.naver_crawler import NaverFinanceCrawler
         from trading.stock_clustering import StockClusterer
-    except ImportError as e:
-        raise HTTPException(status_code=503, detail=str(e))
+    except ImportError:
+        raise HTTPException(status_code=503, detail="군집화 모듈을 불러올 수 없습니다.")
 
     crawler = NaverFinanceCrawler()
     ticker_dfs: dict[str, object] = {}
@@ -125,7 +173,7 @@ def cluster(req: ClusterReq):
         raise HTTPException(status_code=400, detail="유효 종목 수가 군집 수보다 적습니다.")
 
     result = StockClusterer(n_clusters=req.n_clusters, method=req.method).fit(ticker_dfs)
-    return {
+    response = {
         "n_clusters": result.n_clusters,
         "method": result.method,
         "silhouette": round(result.silhouette, 4),
@@ -134,14 +182,25 @@ def cluster(req: ClusterReq):
         "summary": result.summary_df.to_dict(orient="records"),
         "errors": errors,
     }
+    mongo_id = _save_analysis(
+        {
+            "analysis_type": "cluster",
+            "tickers": req.tickers,
+            "params": req.model_dump(),
+            "result": response,
+        }
+    )
+    if mongo_id:
+        response["mongo_id"] = mongo_id
+    return response
 
 
 @router.post("/ml-predict")
 def ml_predict(req: MLPredictReq):
     try:
         from trading.ml_strategy import MLStrategy
-    except ImportError as e:
-        raise HTTPException(status_code=503, detail=str(e))
+    except ImportError:
+        raise HTTPException(status_code=503, detail="ML 모듈을 불러올 수 없습니다.")
 
     try:
         df = _load_ohlcv(req.ticker, req.source, req.pages, req.period)
@@ -153,24 +212,35 @@ def ml_predict(req: MLPredictReq):
         train_result = strategy.train(df)
         signal = strategy.predict(df)
         proba = strategy.predict_proba(df)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=400, detail="ML 예측 처리 실패")
 
-    return {
+    response = {
         "ticker": req.ticker,
         "model_type": train_result.model_type,
         "accuracy": round(train_result.accuracy, 4),
         "signal": signal,
         "probabilities": proba,
     }
+    mongo_id = _save_analysis(
+        {
+            "analysis_type": "ml",
+            "ticker": req.ticker,
+            "params": req.model_dump(),
+            "result": response,
+        }
+    )
+    if mongo_id:
+        response["mongo_id"] = mongo_id
+    return response
 
 
 @router.post("/dl-predict")
 def dl_predict(req: DLPredictReq):
     try:
         from trading.dl_strategy import DLStrategy
-    except ImportError as e:
-        raise HTTPException(status_code=503, detail=str(e))
+    except ImportError:
+        raise HTTPException(status_code=503, detail="DL 모듈을 불러올 수 없습니다.")
 
     try:
         df = _load_ohlcv(req.ticker, req.source, req.pages, req.period)
@@ -184,104 +254,192 @@ def dl_predict(req: DLPredictReq):
         train_result = strategy.train(df, **kwargs)
         signal = strategy.predict(df)
         proba = strategy.predict_proba(df)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=400, detail="DL 예측 처리 실패")
 
-    return {
+    response = {
         "ticker": req.ticker,
         "model_type": train_result.model_type,
         "accuracy": round(train_result.accuracy, 4),
         "signal": signal,
         "probabilities": proba,
     }
+    mongo_id = _save_analysis(
+        {
+            "analysis_type": "dl",
+            "ticker": req.ticker,
+            "params": req.model_dump(),
+            "result": response,
+        }
+    )
+    if mongo_id:
+        response["mongo_id"] = mongo_id
+    return response
 
 
 @router.post("/timeseries")
 def timeseries(req: AnalysisReq):
     try:
         from trading.webapp_analytics import timeseries_report
-    except ImportError as e:
-        raise HTTPException(status_code=503, detail=str(e))
+    except ImportError:
+        raise HTTPException(status_code=503, detail="timeseries 모듈을 불러올 수 없습니다.")
 
     try:
-        return timeseries_report(req.ticker, req.source, req.pages, req.period)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        result = timeseries_report(req.ticker, req.source, req.pages, req.period)
+        mongo_id = _save_analysis(
+            {
+                "analysis_type": "timeseries",
+                "ticker": req.ticker,
+                "params": req.model_dump(),
+                "result": result,
+            }
+        )
+        if mongo_id:
+            result["mongo_id"] = mongo_id
+        return result
+    except Exception:
+        raise HTTPException(status_code=400, detail="timeseries 분석 처리 실패")
 
 
 @router.post("/sequence-lstm")
 def sequence_lstm(req: AnalysisReq):
     try:
         from trading.webapp_analytics import sequence_report
-    except ImportError as e:
-        raise HTTPException(status_code=503, detail=str(e))
+    except ImportError:
+        raise HTTPException(status_code=503, detail="sequence-lstm 모듈을 불러올 수 없습니다.")
 
     try:
-        return sequence_report(req.ticker, req.source, req.pages, req.period)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        result = sequence_report(req.ticker, req.source, req.pages, req.period)
+        mongo_id = _save_analysis(
+            {
+                "analysis_type": "sequence-lstm",
+                "ticker": req.ticker,
+                "params": req.model_dump(),
+                "result": result,
+            }
+        )
+        if mongo_id:
+            result["mongo_id"] = mongo_id
+        return result
+    except Exception:
+        raise HTTPException(status_code=400, detail="sequence-lstm 분석 처리 실패")
 
 
 @router.post("/attention-core")
 def attention_core(req: AnalysisReq):
     try:
         from trading.webapp_analytics import attention_report
-    except ImportError as e:
-        raise HTTPException(status_code=503, detail=str(e))
+    except ImportError:
+        raise HTTPException(status_code=503, detail="attention-core 모듈을 불러올 수 없습니다.")
 
     try:
-        return attention_report(req.ticker, req.source, req.pages, req.period, req.seq_len)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        result = attention_report(req.ticker, req.source, req.pages, req.period, req.seq_len)
+        mongo_id = _save_analysis(
+            {
+                "analysis_type": "attention-core",
+                "ticker": req.ticker,
+                "params": req.model_dump(),
+                "result": result,
+            }
+        )
+        if mongo_id:
+            result["mongo_id"] = mongo_id
+        return result
+    except Exception:
+        raise HTTPException(status_code=400, detail="attention-core 분석 처리 실패")
 
 
 @router.post("/transformer")
 def transformer(req: AnalysisReq):
     try:
         from trading.webapp_analytics import transformer_report
-    except ImportError as e:
-        raise HTTPException(status_code=503, detail=str(e))
+    except ImportError:
+        raise HTTPException(status_code=503, detail="transformer 모듈을 불러올 수 없습니다.")
 
     try:
-        return transformer_report(req.ticker, req.source, req.pages, req.period, req.seq_len)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        result = transformer_report(req.ticker, req.source, req.pages, req.period, req.seq_len)
+        mongo_id = _save_analysis(
+            {
+                "analysis_type": "transformer",
+                "ticker": req.ticker,
+                "params": req.model_dump(),
+                "result": result,
+            }
+        )
+        if mongo_id:
+            result["mongo_id"] = mongo_id
+        return result
+    except Exception:
+        raise HTTPException(status_code=400, detail="transformer 분석 처리 실패")
 
 
 @router.post("/patchtst")
 def patchtst(req: AnalysisReq):
     try:
         from trading.webapp_analytics import patchtst_report
-    except ImportError as e:
-        raise HTTPException(status_code=503, detail=str(e))
+    except ImportError:
+        raise HTTPException(status_code=503, detail="patchtst 모듈을 불러올 수 없습니다.")
 
     try:
-        return patchtst_report(req.ticker, req.source, req.pages, req.period)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        result = patchtst_report(req.ticker, req.source, req.pages, req.period)
+        mongo_id = _save_analysis(
+            {
+                "analysis_type": "patchtst",
+                "ticker": req.ticker,
+                "params": req.model_dump(),
+                "result": result,
+            }
+        )
+        if mongo_id:
+            result["mongo_id"] = mongo_id
+        return result
+    except Exception:
+        raise HTTPException(status_code=400, detail="patchtst 분석 처리 실패")
 
 
 @router.post("/multihead")
 def multihead(req: MultiHeadReq):
     try:
         from trading.webapp_analytics import multihead_report
-    except ImportError as e:
-        raise HTTPException(status_code=503, detail=str(e))
+    except ImportError:
+        raise HTTPException(status_code=503, detail="multihead 모듈을 불러올 수 없습니다.")
 
     try:
-        return multihead_report(req.tickers, req.source, req.pages, req.period)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        result = multihead_report(req.tickers, req.source, req.pages, req.period)
+        mongo_id = _save_analysis(
+            {
+                "analysis_type": "multihead",
+                "tickers": req.tickers,
+                "params": req.model_dump(),
+                "result": result,
+            }
+        )
+        if mongo_id:
+            result["mongo_id"] = mongo_id
+        return result
+    except Exception:
+        raise HTTPException(status_code=400, detail="multihead 분석 처리 실패")
 
 
 @router.post("/backtest")
 def backtest(req: AnalysisReq):
     try:
         from trading.webapp_analytics import backtest_report
-    except ImportError as e:
-        raise HTTPException(status_code=503, detail=str(e))
+    except ImportError:
+        raise HTTPException(status_code=503, detail="backtest 모듈을 불러올 수 없습니다.")
 
     try:
-        return backtest_report(req.ticker, req.source, req.pages, req.period)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        result = backtest_report(req.ticker, req.source, req.pages, req.period)
+        mongo_id = _save_analysis(
+            {
+                "analysis_type": "backtest",
+                "ticker": req.ticker,
+                "params": req.model_dump(),
+                "result": result,
+            }
+        )
+        if mongo_id:
+            result["mongo_id"] = mongo_id
+        return result
+    except Exception:
+        raise HTTPException(status_code=400, detail="backtest 분석 처리 실패")
