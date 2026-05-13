@@ -9,6 +9,17 @@
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
   <style>
     body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    /* Maintain minimum readability even when Tailwind CDN fails to load */
+    main { max-width: 1200px; margin: 0 auto; }
+    input, select, button { font: inherit; }
+    .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    #summary-grid > div, #charts-grid > div, #notes-box, pre {
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      border-radius: 10px;
+    }
+    @media (min-width: 1024px) {
+      section.mt-6 { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 24px; }
+    }
   </style>
 </head>
 <body class="min-h-screen bg-slate-950 text-slate-100">
@@ -118,12 +129,12 @@
             </label>
           </div>
           <div class="mt-3 grid grid-cols-2 gap-2 text-sm">
-            <button data-action="mongo-create-user" class="action-btn rounded-lg bg-sky-700 px-3 py-2 hover:bg-sky-600">사용자 생성</button>
-            <button data-action="mongo-login" class="action-btn rounded-lg bg-indigo-700 px-3 py-2 hover:bg-indigo-600">사용자 로그인</button>
-            <button data-action="mongo-list-users" class="action-btn rounded-lg bg-slate-700 px-3 py-2 hover:bg-slate-600">사용자 목록</button>
-            <button data-action="mongo-list-crawls" class="action-btn rounded-lg bg-slate-700 px-3 py-2 hover:bg-slate-600">크롤링 목록</button>
-            <button data-action="mongo-list-analyses" class="action-btn rounded-lg bg-slate-700 px-3 py-2 hover:bg-slate-600">분석 목록</button>
-            <button data-action="mongo-delete-doc" class="action-btn rounded-lg bg-rose-700 px-3 py-2 hover:bg-rose-600">ID로 문서 삭제</button>
+            <button data-action="mongo-create-user" data-requires-mongo="true" class="action-btn rounded-lg bg-sky-700 px-3 py-2 hover:bg-sky-600">사용자 생성</button>
+            <button data-action="mongo-login" data-requires-mongo="true" class="action-btn rounded-lg bg-indigo-700 px-3 py-2 hover:bg-indigo-600">사용자 로그인</button>
+            <button data-action="mongo-list-users" data-requires-mongo="true" class="action-btn rounded-lg bg-slate-700 px-3 py-2 hover:bg-slate-600">사용자 목록</button>
+            <button data-action="mongo-list-crawls" data-requires-mongo="true" class="action-btn rounded-lg bg-slate-700 px-3 py-2 hover:bg-slate-600">크롤링 목록</button>
+            <button data-action="mongo-list-analyses" data-requires-mongo="true" class="action-btn rounded-lg bg-slate-700 px-3 py-2 hover:bg-slate-600">분석 목록</button>
+            <button data-action="mongo-delete-doc" data-requires-mongo="true" class="action-btn rounded-lg bg-rose-700 px-3 py-2 hover:bg-rose-600">ID로 문서 삭제</button>
           </div>
         </section>
       </aside>
@@ -165,6 +176,9 @@
     const notesList = document.getElementById('notes-list');
     const resultTitle = document.getElementById('result-title');
     const resultSubtitle = document.getElementById('result-subtitle');
+    const MONGO_HEALTH_ENDPOINT = '/api/mongo/health';
+    const mongoActionButtons = Array.from(document.querySelectorAll('[data-requires-mongo="true"]'));
+    let mongoReady = false;
     let activeCharts = [];
 
     const getCommon = () => ({
@@ -202,6 +216,17 @@
       notesBox.classList.add('hidden');
       activeCharts.forEach(chart => chart.destroy());
       activeCharts = [];
+    };
+
+    const updateMongoStatus = (ready, message = '') => {
+      mongoReady = ready;
+      mongoActionButtons.forEach(btn => { btn.disabled = !ready; });
+      if (!ready && message) {
+        setStatus('Mongo 연결 필요', false);
+        resultTitle.textContent = 'MongoDB 상태';
+        resultSubtitle.textContent = MONGO_HEALTH_ENDPOINT;
+        resultEl.textContent = message;
+      }
     };
 
     const renderSummary = (items = []) => {
@@ -320,6 +345,11 @@
     };
 
     async function runMongoAction(name, url, method = 'GET', payload = null) {
+      if (!mongoReady) {
+        setStatus(`${name} 실패`, false);
+        resultEl.textContent = `MongoDB 연결 후 다시 시도하세요. (${MONGO_HEALTH_ENDPOINT})`;
+        return;
+      }
       setStatus(`${name} 실행 중...`, null);
       resultTitle.textContent = name;
       resultSubtitle.textContent = `${method} ${url}`;
@@ -346,6 +376,25 @@
       } catch (err) {
         setStatus(`${name} 실패`, false);
         resultEl.textContent = String(err.message || err);
+      }
+    }
+
+    async function checkMongoHealth() {
+      try {
+        const res = await fetch(MONGO_HEALTH_ENDPOINT);
+        const data = await res.json();
+        if (res.ok && data?.status === 'ok') {
+          updateMongoStatus(true);
+          return;
+        }
+        updateMongoStatus(false, JSON.stringify(data, null, 2));
+      } catch (err) {
+        updateMongoStatus(
+          false,
+          err?.message
+            || err?.toString?.()
+            || `Failed to connect to ${MONGO_HEALTH_ENDPOINT}. Please check if MongoDB is running.`,
+        );
       }
     }
 
@@ -432,6 +481,8 @@
         actions[action]?.();
       });
     });
+
+    checkMongoHealth();
   </script>
 </body>
 </html>
