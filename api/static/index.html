@@ -9,6 +9,17 @@
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
   <style>
     body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    /* Tailwind CDN 로딩 실패 시에도 최소 가독성 유지 */
+    main { max-width: 1200px; margin: 0 auto; }
+    input, select, button { font: inherit; }
+    .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    #summary-grid > div, #charts-grid > div, #notes-box, pre {
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      border-radius: 10px;
+    }
+    @media (min-width: 1024px) {
+      section.mt-6 { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 24px; }
+    }
   </style>
 </head>
 <body class="min-h-screen bg-slate-950 text-slate-100">
@@ -165,6 +176,8 @@
     const notesList = document.getElementById('notes-list');
     const resultTitle = document.getElementById('result-title');
     const resultSubtitle = document.getElementById('result-subtitle');
+    const mongoButtons = Array.from(document.querySelectorAll('[data-action^="mongo-"]'));
+    let mongoReady = false;
     let activeCharts = [];
 
     const getCommon = () => ({
@@ -202,6 +215,17 @@
       notesBox.classList.add('hidden');
       activeCharts.forEach(chart => chart.destroy());
       activeCharts = [];
+    };
+
+    const setMongoReady = (ready, message = '') => {
+      mongoReady = ready;
+      mongoButtons.forEach(btn => { btn.disabled = !ready; });
+      if (!ready && message) {
+        setStatus('Mongo 연결 필요', false);
+        resultTitle.textContent = 'MongoDB 상태';
+        resultSubtitle.textContent = '/api/mongo/health';
+        resultEl.textContent = message;
+      }
     };
 
     const renderSummary = (items = []) => {
@@ -320,6 +344,11 @@
     };
 
     async function runMongoAction(name, url, method = 'GET', payload = null) {
+      if (!mongoReady) {
+        setStatus(`${name} 실패`, false);
+        resultEl.textContent = 'MongoDB 연결 후 다시 시도하세요. (/api/mongo/health)';
+        return;
+      }
       setStatus(`${name} 실행 중...`, null);
       resultTitle.textContent = name;
       resultSubtitle.textContent = `${method} ${url}`;
@@ -346,6 +375,20 @@
       } catch (err) {
         setStatus(`${name} 실패`, false);
         resultEl.textContent = String(err.message || err);
+      }
+    }
+
+    async function checkMongoHealth() {
+      try {
+        const res = await fetch('/api/mongo/health');
+        const data = await res.json();
+        if (res.ok && data?.status === 'ok') {
+          setMongoReady(true);
+          return;
+        }
+        setMongoReady(false, JSON.stringify(data, null, 2));
+      } catch (err) {
+        setMongoReady(false, String(err.message || err));
       }
     }
 
@@ -432,6 +475,8 @@
         actions[action]?.();
       });
     });
+
+    checkMongoHealth();
   </script>
 </body>
 </html>
