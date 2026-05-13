@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import logging
+from datetime import timedelta
+
+import pandas as pd
 
 from fastapi import APIRouter, HTTPException
 from pymongo.errors import PyMongoError
@@ -55,6 +58,13 @@ class AnalysisReq(BaseModel):
     pages: int = Field(default=80, ge=5, le=120)
     period: str = Field(default="5y")
     seq_len: int = Field(default=20, ge=5, le=60)
+
+
+class StockForecastReq(BaseModel):
+    ticker: str = Field(default="428560", description="종목코드 (예: 428560)")
+    source: str = Field(default="naver", description="naver | yfinance")
+    pages: int = Field(default=15, ge=1, le=50)
+    period: str = Field(default="1y")
 
 
 class MultiHeadReq(BaseModel):
@@ -443,3 +453,178 @@ def backtest(req: AnalysisReq):
         return result
     except Exception:
         raise HTTPException(status_code=400, detail="backtest 분석 처리 실패")
+
+
+@router.post("/stock-forecast")
+def stock_forecast(req: StockForecastReq):
+    """
+    종목의 내일 주가 예측 리포트를 생성합니다.
+    네이버 금융(또는 yfinance)에서 데이터를 수집하고,
+    최근 변동성 기반 예측 범위와 시나리오 분석을 반환합니다.
+    """
+    # ── 1. 데이터 수집 ─────────────────────────────────────────────────────
+    df = _load_ohlcv(req.ticker, req.source, req.pages, req.period)
+
+    # ── 2. 종목명 조회 ─────────────────────────────────────────────────────
+    stock_name = req.ticker
+    try:
+        from trading.naver_crawler import NaverFinanceCrawler
+        info = NaverFinanceCrawler().get_stock_info(req.ticker)
+        if info.get("name"):
+            stock_name = info["name"]
+    except Exception:
+        pass
+
+    # ── 3. 기본 통계 계산 ──────────────────────────────────────────────────
+    close = df["Close"].astype(float)
+    latest_close = float(close.iloc[-1])
+    prev_close = float(close.iloc[-2]) if len(close) >= 2 else latest_close
+    change = latest_close - prev_close
+    change_pct = (change / prev_close * 100) if prev_close else 0.0
+
+    tail_252 = close.tail(252)
+    high_52w = float(tail_252.max())
+    low_52w = float(tail_252.min())
+    pos_52w = (
+        (latest_close - low_52w) / (high_52w - low_52w) * 100
+        if (high_52w - low_52w) > 0
+        else 50.0
+    )
+
+    latest_volume = int(df["Volume"].iloc[-1]) if "Volume" in df.columns else 0
+
+    # ── 4. 변동성 기반 예측 범위 계산 ─────────────────────────────────────
+    returns = close.pct_change().dropna()
+    n_ret = len(returns)
+    recent_vol = float(returns.tail(20).std()) if n_ret >= 20 else float(returns.std() if n_ret > 1 else 0.01)
+
+    ma5 = float(close.tail(5).mean())
+    ma20 = float(close.tail(20).mean()) if len(close) >= 20 else float(close.mean())
+    trend_factor = (ma5 - ma20) / ma20 if ma20 else 0.0
+
+    center_pred = latest_close * (1.0 + trend_factor * 0.3)
+    range_delta = latest_close * recent_vol * 1.5
+    lower_pred = center_pred - range_delta
+    upper_pred = center_pred + range_delta
+    center_low = center_pred * 0.995
+    center_high = center_pred * 1.005
+
+    # ── 5. 날짜 계산 ───────────────────────────────────────────────────────
+    if "Date" in df.columns:
+        latest_ts = pd.Timestamp(df["Date"].iloc[-1])
+    else:
+        latest_ts = pd.Timestamp(df.index[-1])
+
+    tomorrow_ts = latest_ts + timedelta(days=1)
+    while tomorrow_ts.weekday() >= 5:
+        tomorrow_ts += timedelta(days=1)
+
+    today_str = latest_ts.strftime("%Y년 %m월 %d일")
+    tomorrow_str = tomorrow_ts.strftime("%Y년 %m월 %d일")
+
+    # ── 6. 시나리오 판단 ───────────────────────────────────────────────────
+    if trend_factor > 0.005:
+        up_prob_label = "높음"
+    elif trend_factor < -0.005:
+        up_prob_label = "낮음"
+    else:
+        up_prob_label = "중간"
+
+    # ── 7. 응답 조립 ───────────────────────────────────────────────────────
+    summary = [
+        {"label": "종목명", "value": stock_name},
+        {"label": "종목코드", "value": req.ticker},
+        {"label": "기준일 종가", "value": f"{latest_close:,.0f}원"},
+        {"label": "전일 대비", "value": f"{'↑' if change >= 0 else '↓'} {abs(change):,.0f}원 ({'+' if change_pct >= 0 else ''}{change_pct:.2f}%)"},
+        {"label": "52주 최고 / 최저", "value": f"{high_52w:,.0f}원 / {low_52w:,.0f}원"},
+        {"label": "거래량", "value": f"{latest_volume:,}주"},
+        {"label": "내일 예상 범위", "value": f"{lower_pred:,.0f} ~ {upper_pred:,.0f}원"},
+        {"label": "예측 대상일", "value": tomorrow_str},
+    ]
+
+    notes = [
+        f"{stock_name} (종목코드: {req.ticker})의 내일({tomorrow_str}) 주가 예측은 불확실성이 높습니다. ETF 주가는 기초지수 성과, 미국 증시 움직임, 환율(원/달러), 시장 심리 등에 따라 크게 변동할 수 있습니다.",
+        f"최근 주가 정보 ({today_str} 장 마감 기준)",
+        f"  종가: 약 {latest_close:,.0f}원 ({'+' if change >= 0 else ''}{change:,.0f}원, {'+' if change_pct >= 0 else ''}{change_pct:.2f}%)",
+        f"  최근 범위: 52주 최고 {high_52w:,.0f}원 / 최저 {low_52w:,.0f}원 (현재 위치: 52주 범위의 {pos_52w:.0f}%)",
+        f"  거래량: {latest_volume:,}주",
+        f"예측 범위 (단기 참고용)",
+        f"  내일 예상 범위: {lower_pred:,.0f} ~ {upper_pred:,.0f}원 정도 (중심값 약 {center_low:,.0f} ~ {center_high:,.0f}원)",
+        f"  상승 시나리오 (확률 {up_prob_label}): 시장 강세, 기초지수 및 관련 섹터가 긍정적 움직임을 보이면 +1% 내외 상승 가능.",
+        "  하락 시나리오: 시장 조정, 위험회피 심리 확대 또는 원화 강세 시 -1% 정도 하락 가능.",
+        "  중립: 보합권에서 마감할 가능성도 높음 (변동성 낮은 ETF 특성).",
+        "영향 요인: 기초지수 성과, 미국 증시(S&P 500·Nasdaq) 및 금융주 동향, 원/달러 환율 변동, 글로벌 리스크(지정학·매크로 데이터).",
+        "중요 주의사항: 주가 예측은 본질적으로 불확실하며, 과거 패턴이나 현재 추세가 미래를 보장하지 않습니다. 이는 투자 조언이 아니며, 실제 투자 결정은 본인 책임 하에 전문가 상담이나 최신 시장 정보를 바탕으로 하시기 바랍니다.",
+    ]
+
+    # ── 8. 차트 데이터 ─────────────────────────────────────────────────────
+    tail_n = min(30, len(df))
+    recent = df.tail(tail_n)
+    if "Date" in recent.columns:
+        chart_labels = pd.to_datetime(recent["Date"]).dt.strftime("%m-%d").tolist()
+    else:
+        chart_labels = [str(i) for i in range(tail_n)]
+
+    close_values = recent["Close"].tolist()
+    pred_band_lower = [round(lower_pred)] * tail_n
+    pred_band_upper = [round(upper_pred)] * tail_n
+
+    charts = [
+        {
+            "title": f"{stock_name} 최근 종가 추이 및 예측 범위",
+            "type": "line",
+            "labels": chart_labels,
+            "datasets": [
+                {
+                    "label": "종가",
+                    "data": close_values,
+                    "borderColor": "#06b6d4",
+                    "backgroundColor": "rgba(6,182,212,0.10)",
+                },
+                {
+                    "label": f"예측 상단 ({round(upper_pred):,}원)",
+                    "data": pred_band_upper,
+                    "borderColor": "#22c55e",
+                    "backgroundColor": "rgba(34,197,94,0.06)",
+                },
+                {
+                    "label": f"예측 하단 ({round(lower_pred):,}원)",
+                    "data": pred_band_lower,
+                    "borderColor": "#f97316",
+                    "backgroundColor": "rgba(249,115,22,0.06)",
+                },
+            ],
+        }
+    ]
+
+    response = {
+        "ticker": req.ticker,
+        "name": stock_name,
+        "target_date": tomorrow_str,
+        "base_date": today_str,
+        "latest_close": round(latest_close),
+        "change": round(change),
+        "change_pct": round(change_pct, 2),
+        "high_52w": round(high_52w),
+        "low_52w": round(low_52w),
+        "predicted_lower": round(lower_pred),
+        "predicted_upper": round(upper_pred),
+        "predicted_center": round(center_pred),
+        "recent_volatility_pct": round(recent_vol * 100, 2),
+        "summary": summary,
+        "notes": notes,
+        "charts": charts,
+    }
+
+    mongo_id = _save_analysis(
+        {
+            "analysis_type": "stock_forecast",
+            "ticker": req.ticker,
+            "params": req.model_dump(),
+            "result": {k: v for k, v in response.items() if k not in ("summary", "notes", "charts")},
+        }
+    )
+    if mongo_id:
+        response["mongo_id"] = mongo_id
+
+    return response
