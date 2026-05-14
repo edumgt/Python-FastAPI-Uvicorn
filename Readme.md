@@ -92,6 +92,48 @@ Mongo CRUD:
 - `DELETE /api/mongo/crawls/<id>`
 - `DELETE /api/mongo/analyses/<id>`
 
+### MongoDB Schema (BE Process)
+
+```mermaid
+erDiagram
+    login_users {
+        ObjectId _id PK
+        string username UK
+        string password_hash
+        string role
+        bool active
+        datetime created_at
+        datetime updated_at
+    }
+
+    crawl_data {
+        ObjectId _id PK
+        string ticker
+        string market
+        int pages
+        int ohlcv_rows
+        object latest_ohlcv
+        object stock_info
+        object[] market_sample
+        datetime created_at
+        datetime updated_at
+    }
+
+    analysis_data {
+        ObjectId _id PK
+        string analysis_type
+        string ticker
+        string[] tickers
+        object params
+        object result
+        string memo
+        datetime created_at
+        datetime updated_at
+    }
+
+    crawl_data }o--o{ analysis_data : "ticker/tickers (logical)"
+```
+
 ## Airflow
 
 Airflow DAG 위치:
