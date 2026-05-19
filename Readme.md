@@ -418,3 +418,10 @@ trading/
 - Mongo가 내려가 있어도 Flask 분석 API는 가능한 범위에서 결과를 반환하고, 저장만 건너뜁니다.
 - Airflow는 공식 `apache/airflow` 이미지를 사용하며 로컬 개발용 `standalone` 모드로 실행됩니다.
 - ML·DL·Forecast 기능은 `yfinance` 소스 선택 시 Yahoo Finance 경로로 정상 동작합니다. Naver Finance 크롤링은 해당 도메인 접근이 가능한 환경에서만 수집됩니다.
+
+
+--- 
+
+### docker 포트 사용 시 주의
+
+Found the root cause. Port 8761 is in Windows' excluded port range (8702–8801) — Windows reserves it and WSL2 can't forward it, hence the 500 error.

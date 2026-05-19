@@ -48,6 +48,7 @@
     html, body {
       margin: 0; padding: 0;
       font-family: "Pretendard Variable", Pretendard, "Noto Sans KR", system-ui, sans-serif;
+      font-size: 15px;
       background: var(--bg);
       color: var(--tx);
       min-height: 100vh;
@@ -125,14 +126,14 @@
       flex-wrap: wrap;
     }
     .footer-link {
-      font-size: 11px; color: rgba(209,212,220,.55);
+      font-size: 12px; color: rgba(209,212,220,.55);
       text-decoration: none;
       display: flex; align-items: center; gap: 4px;
       transition: color .15s;
     }
     .footer-link:hover { color: var(--nav-tx); }
     .footer-right {
-      font-size: 11px;
+      font-size: 12px;
       color: rgba(209,212,220,.35);
       text-align: right;
     }
@@ -229,12 +230,12 @@
     }
 
     /* ── FORM ────────────────────────────────────────── */
-    .fld { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: var(--tx2); }
+    .fld { display: flex; flex-direction: column; gap: 5px; font-size: 13px; color: var(--tx2); }
     .tv-inp, .tv-sel {
       width: 100%; height: 36px; padding: 0 10px;
       border: 1px solid var(--ln2); border-radius: 6px;
       background: var(--surface); color: var(--tx);
-      font-family: inherit; font-size: 13px; outline: none;
+      font-family: inherit; font-size: 14px; outline: none;
       transition: border-color .15s, box-shadow .15s;
     }
     .tv-inp:focus, .tv-sel:focus {
@@ -251,15 +252,15 @@
       transition: border-color .15s, background .15s;
     }
     .ac:hover { border-color: var(--blue); background: #f4f7ff; }
-    .ac-tag  { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; }
-    .ac-title{ font-size: 13px; font-weight: 600; color: var(--tx); margin-top: 4px; }
-    .ac-desc { font-size: 11px; color: var(--tx2); margin-top: 2px; }
+    .ac-tag  { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+    .ac-title{ font-size: 14px; font-weight: 600; color: var(--tx); margin-top: 4px; }
+    .ac-desc { font-size: 13px; color: var(--tx2); margin-top: 2px; }
 
     /* ── BUTTONS ─────────────────────────────────────── */
     .btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 5px;
       height: 34px; padding: 0 14px; border-radius: 6px;
-      font-family: inherit; font-size: 13px; font-weight: 500; white-space: nowrap;
+      font-family: inherit; font-size: 14px; font-weight: 500; white-space: nowrap;
       cursor: pointer; transition: background .15s, border-color .15s, color .15s;
       border: 1px solid transparent;
     }
@@ -279,13 +280,13 @@
     .btn-icon:hover { background: var(--s2); }
 
     /* ── MICRO LABEL ─────────────────────────────────── */
-    .micro { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--tx3); }
+    .micro { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--tx3); }
 
     /* ── STATUS PILL ─────────────────────────────────── */
     .pill {
       display: inline-flex; align-items: center; gap: 5px;
       padding: 3px 10px; border-radius: 100px;
-      font-size: 12px; font-weight: 500; border: 1px solid transparent;
+      font-size: 13px; font-weight: 500; border: 1px solid transparent;
     }
     .pill-n    { border-color: var(--ln2); color: var(--tx2); }
     .pill-ok   { border-color: rgba(8,153,129,.35);   background: rgba(8,153,129,.08);   color: #057a65; }
@@ -333,14 +334,14 @@
     .sum-card { background: var(--s2); border: 1px solid var(--ln); border-radius: 8px; padding: 13px 14px; }
 
     /* ── TABLE ───────────────────────────────────────── */
-    .tv-tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
-    .tv-tbl th { padding: 7px 11px; background: var(--s2); color: var(--tx2); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; border-bottom: 1px solid var(--ln); text-align: left; }
+    .tv-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .tv-tbl th { padding: 7px 11px; background: var(--s2); color: var(--tx2); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid var(--ln); text-align: left; }
     .tv-tbl td { padding: 7px 11px; border-bottom: 1px solid var(--ln); color: var(--tx); }
     .tv-tbl tr:last-child td { border-bottom: none; }
     .tv-tbl tbody tr:hover td { background: var(--s2); }
 
     /* ── LOG ITEM ────────────────────────────────────── */
-    .log-item { padding: 9px 13px; font-size: 12px; color: var(--tx2); line-height: 1.65; border-bottom: 1px solid var(--ln); }
+    .log-item { padding: 9px 13px; font-size: 14px; color: var(--tx2); line-height: 1.65; border-bottom: 1px solid var(--ln); }
     .log-item:last-child { border-bottom: none; }
 
     /* ── CHART GRID ──────────────────────────────────── */
@@ -519,30 +520,6 @@
 <!-- ═══════════ MAIN ═══════════ -->
 <main style="max-width:1600px;margin:0 auto;padding:18px 14px 70px;">
 
-  <!-- Info cards -->
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-bottom:14px;">
-    <div class="card" style="padding:15px;">
-      <p class="micro"><i class="fa-brands fa-python" style="margin-right:3px;"></i>Framework</p>
-      <p style="font-size:20px;font-weight:700;margin-top:6px;color:var(--tx);">Django</p>
-      <p style="font-size:11px;color:var(--tx2);margin-top:3px;">Main workstation shell</p>
-    </div>
-    <div class="card" style="padding:15px;">
-      <p class="micro"><i class="fa-solid fa-flask" style="margin-right:3px;"></i>API Layer</p>
-      <p style="font-size:20px;font-weight:700;margin-top:6px;color:var(--tx);">Flask</p>
-      <p style="font-size:11px;color:var(--tx2);margin-top:3px;">Analysis + Mongo endpoints</p>
-    </div>
-    <div class="card" style="padding:15px;">
-      <p class="micro"><i class="fa-solid fa-wind" style="margin-right:3px;"></i>Batch</p>
-      <p style="font-size:20px;font-weight:700;margin-top:6px;color:var(--tx);">Airflow</p>
-      <p style="font-size:11px;color:var(--tx2);margin-top:3px;">Daily orchestration</p>
-    </div>
-    <div class="card" style="padding:15px;">
-      <p class="micro"><i class="fa-solid fa-chart-candlestick" style="margin-right:3px;"></i>Style</p>
-      <p style="font-size:20px;font-weight:700;margin-top:6px;color:var(--blue);">TradingView</p>
-      <p style="font-size:11px;color:var(--tx2);margin-top:3px;">Pretendard + White Board</p>
-    </div>
-  </div>
-
   <!-- Quick action bar -->
   <div class="card" style="padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
     <span style="font-size:12px;color:var(--tx2);font-weight:500;white-space:nowrap;">
@@ -562,15 +539,15 @@
     <div class="card" style="padding:18px;">
       <p class="micro"><i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>About</p>
       <h2 style="font-size:15px;font-weight:600;margin-top:6px;color:var(--tx);">AlphaStation</h2>
-      <p style="font-size:13px;color:var(--tx2);margin-top:8px;line-height:1.75;">
+      <p style="font-size:14px;color:var(--tx2);margin-top:8px;line-height:1.75;">
         TradingView 톤의 워크스테이션 위에 국내 주식 크롤링, 군집화, ML/DL 분석, Mongo 기록, Airflow 배치 상태를 한 화면에서 다루도록 재구성했습니다.
       </p>
       <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;">
-        <span style="font-size:11px;padding:3px 10px;border-radius:100px;border:1px solid var(--ln);color:var(--tx2);">Pretendard UI</span>
-        <span style="font-size:11px;padding:3px 10px;border-radius:100px;border:1px solid var(--ln);color:var(--tx2);">TradingView Style</span>
-        <span style="font-size:11px;padding:3px 10px;border-radius:100px;border:1px solid var(--ln);color:var(--tx2);">Signal + Forecast</span>
-        <span style="font-size:11px;padding:3px 10px;border-radius:100px;border:1px solid var(--ln);color:var(--tx2);">Mongo Ops</span>
-        <span style="font-size:11px;padding:3px 10px;border-radius:100px;border:1px solid var(--ln);color:var(--tx2);">Airflow DAGs</span>
+        <span style="font-size:13px;padding:3px 10px;border-radius:100px;border:1px solid var(--ln);color:var(--tx2);">Pretendard UI</span>
+        <span style="font-size:13px;padding:3px 10px;border-radius:100px;border:1px solid var(--ln);color:var(--tx2);">TradingView Style</span>
+        <span style="font-size:13px;padding:3px 10px;border-radius:100px;border:1px solid var(--ln);color:var(--tx2);">Signal + Forecast</span>
+        <span style="font-size:13px;padding:3px 10px;border-radius:100px;border:1px solid var(--ln);color:var(--tx2);">Mongo Ops</span>
+        <span style="font-size:13px;padding:3px 10px;border-radius:100px;border:1px solid var(--ln);color:var(--tx2);">Airflow DAGs</span>
       </div>
       <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
         <span class="micro">AlphaStation · Django Web / Flask API / Airflow Ops</span>
