@@ -18,5 +18,12 @@ scipy>=1.12.0
 joblib>=1.3.0
 xgboost>=2.0.0
 
-# Optional for LSTM deep learning mode
+# ── Kafka 이벤트 파이프라인 ──────────────────────────
+kafka-python>=2.0.2          # Kafka Producer / Consumer
+faust-streaming>=0.10.14     # Kafka Streams (Python 구현체)
+
+# ── Spark 연동 (선택) ────────────────────────────────
+# pyspark>=3.5.0             # Spark Structured Streaming (Docker 또는 로컬 Spark)
+
+# ── Optional for LSTM deep learning mode ─────────────
 # tensorflow>=2.15.0

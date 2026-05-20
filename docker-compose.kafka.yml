@@ -1,0 +1,295 @@
+version: '3.9'
+
+# ═══════════════════════════════════════════════════════════════
+# Kafka 이벤트 파이프라인 인프라
+#
+# 포함 서비스:
+#   - Zookeeper        (Kafka 클러스터 코디네이터)
+#   - Kafka            (메시지 브로커)
+#   - Kafka UI         (웹 관리 콘솔 — http://localhost:8989)
+#   - NiFi             (ETL 데이터 플로우 — http://localhost:8443/nifi)
+#   - Spark Master     (분산 처리 마스터 — http://localhost:8085)
+#   - Spark Worker     (분산 처리 워커)
+#
+# 실행:
+#   docker compose -f docker-compose.kafka.yml up -d
+#
+# 기존 서비스와 연결:
+#   docker compose -f docker-compose.yml -f docker-compose.kafka.yml up -d
+#
+# 복제 전략 (현재: 개발 환경, 단일 브로커):
+#   - replication.factor=1, partitions=6
+#   프로덕션 전환 시:
+#   - kafka-2, kafka-3 서비스 추가
+#   - KAFKA_DEFAULT_REPLICATION_FACTOR=3
+#   - KAFKA_MIN_INSYNC_REPLICAS=2
+# ═══════════════════════════════════════════════════════════════
+
+networks:
+  shared-net:
+    external: true
+  kafka-net:
+    driver: bridge
+
+volumes:
+  zookeeper-data:
+  zookeeper-logs:
+  kafka-data:
+  nifi-data:
+  nifi-logs:
+  spark-data:
+
+services:
+
+  # ─────────────────────────────────────────────────
+  # Zookeeper — Kafka 클러스터 메타데이터 관리
+  # ─────────────────────────────────────────────────
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.1
+    container_name: zookeeper
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SYNC_LIMIT: 2
+    ports:
+      - "2181:2181"
+    volumes:
+      - zookeeper-data:/var/lib/zookeeper/data
+      - zookeeper-logs:/var/lib/zookeeper/log
+    networks:
+      - kafka-net
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo ruok | nc localhost 2181"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────────────
+  # Kafka Broker — 메시지 브로커
+  #
+  # 파티셔닝 설정:
+  #   - num.partitions=6         (기본 파티션 수)
+  #   - log.retention.hours=24  (원시 데이터 24시간 보관)
+  #
+  # 복제 설정 (현재 개발: 단일 브로커):
+  #   - default.replication.factor=1
+  #   - min.insync.replicas=1
+  #
+  # 프로덕션 전환 시 변경 사항:
+  #   KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+  #   KAFKA_MIN_INSYNC_REPLICAS: 2
+  # ─────────────────────────────────────────────────
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: kafka
+    restart: unless-stopped
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+
+      # 리스너 설정 — 내부(컨테이너간) + 외부(호스트) 접근
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+
+      # 파티션 / 복제 기본값
+      KAFKA_NUM_PARTITIONS: 6
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_MIN_INSYNC_REPLICAS: 1
+
+      # 성능 설정
+      KAFKA_LOG_RETENTION_HOURS: 24
+      KAFKA_LOG_SEGMENT_BYTES: 1073741824    # 1 GB
+      KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 300000
+      KAFKA_COMPRESSION_TYPE: lz4
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+      # 오프셋 토픽 설정 (소규모 개발 환경)
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+    ports:
+      - "9092:9092"       # 외부 접근 (호스트 → Kafka)
+      - "29092:29092"     # 내부 접근 (컨테이너간)
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    networks:
+      - kafka-net
+      - shared-net        # 기존 Django/Flask와 같은 네트워크
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # ─────────────────────────────────────────────────
+  # Kafka UI — 웹 기반 클러스터 관리 콘솔
+  # 접속: http://localhost:8989
+  # ─────────────────────────────────────────────────
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    restart: unless-stopped
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      KAFKA_CLUSTERS_0_NAME: stock-kafka-cluster
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      DYNAMIC_CONFIG_ENABLED: "true"
+      AUTH_TYPE: "DISABLED"   # 개발환경 — 프로덕션에서는 LOGIN_FORM으로 변경
+    ports:
+      - "8989:8080"
+    networks:
+      - kafka-net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+
+  # ─────────────────────────────────────────────────
+  # Apache NiFi — ETL 데이터 플로우 엔진
+  # 접속: https://localhost:8443/nifi
+  # 초기 자격증명: admin / adminpassword12345 (환경변수로 설정)
+  # ─────────────────────────────────────────────────
+  nifi:
+    image: apache/nifi:1.27.0
+    container_name: nifi
+    restart: unless-stopped
+    environment:
+      NIFI_WEB_HTTPS_PORT: 8443
+      NIFI_WEB_HTTP_PORT: ""
+      SINGLE_USER_CREDENTIALS_USERNAME: admin
+      SINGLE_USER_CREDENTIALS_PASSWORD: adminpassword12345
+      NIFI_SENSITIVE_PROPS_KEY: nifi-sensitive-props-key-change-me
+      # Kafka 연동을 위한 환경변수
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+    ports:
+      - "8443:8443"
+    volumes:
+      - nifi-data:/opt/nifi/nifi-current/conf
+      - nifi-logs:/opt/nifi/nifi-current/logs
+      - .:/opt/nifi/project     # 프로젝트 파일 마운트
+    networks:
+      - kafka-net
+      - shared-net
+    depends_on:
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fk", "https://localhost:8443/nifi-api/system-diagnostics"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 90s   # NiFi 초기화에 시간이 필요함
+
+  # ─────────────────────────────────────────────────
+  # Apache Spark Master — 분산 처리 마스터 노드
+  # 접속: http://localhost:8085
+  # ─────────────────────────────────────────────────
+  spark-master:
+    image: bitnami/spark:3.5.1
+    container_name: spark-master
+    restart: unless-stopped
+    environment:
+      SPARK_MODE: master
+      SPARK_RPC_AUTHENTICATION_ENABLED: "no"
+      SPARK_RPC_ENCRYPTION_ENABLED: "no"
+      SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED: "no"
+      SPARK_SSL_ENABLED: "no"
+      SPARK_MASTER_WEBUI_PORT: 8085
+    ports:
+      - "8085:8085"     # Spark Web UI
+      - "7077:7077"     # Spark master 포트 (워커 연결)
+    volumes:
+      - .:/opt/bitnami/spark/work  # 프로젝트 코드 마운트
+      - spark-data:/opt/bitnami/spark/data
+    networks:
+      - kafka-net
+      - shared-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8085"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  # ─────────────────────────────────────────────────
+  # Apache Spark Worker — 분산 처리 워커 노드
+  # ─────────────────────────────────────────────────
+  spark-worker:
+    image: bitnami/spark:3.5.1
+    container_name: spark-worker
+    restart: unless-stopped
+    depends_on:
+      spark-master:
+        condition: service_healthy
+    environment:
+      SPARK_MODE: worker
+      SPARK_MASTER_URL: spark://spark-master:7077
+      SPARK_WORKER_MEMORY: 1G
+      SPARK_WORKER_CORES: 2
+      SPARK_RPC_AUTHENTICATION_ENABLED: "no"
+      SPARK_RPC_ENCRYPTION_ENABLED: "no"
+      SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED: "no"
+      SPARK_SSL_ENABLED: "no"
+    volumes:
+      - .:/opt/bitnami/spark/work
+    networks:
+      - kafka-net
+      - shared-net
+
+  # ─────────────────────────────────────────────────
+  # Kafka Topic 초기화 — 시작 시 필수 토픽 자동 생성
+  # ─────────────────────────────────────────────────
+  kafka-init:
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: kafka-init
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - kafka-net
+    entrypoint: ["/bin/bash", "-c"]
+    command: |
+      "
+      echo '토픽 초기화 시작...'
+
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists \
+        --topic stock.raw.prices \
+        --partitions 6 \
+        --replication-factor 1 \
+        --config retention.ms=86400000 \
+        --config compression.type=lz4
+
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists \
+        --topic stock.filtered.significant \
+        --partitions 3 \
+        --replication-factor 1 \
+        --config retention.ms=604800000
+
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists \
+        --topic stock.alerts.high-volume \
+        --partitions 2 \
+        --replication-factor 1 \
+        --config retention.ms=604800000
+
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists \
+        --topic stock.aggregated.ohlcv \
+        --partitions 3 \
+        --replication-factor 1 \
+        --config retention.ms=604800000
+
+      echo '토픽 초기화 완료!'
+      kafka-topics --bootstrap-server kafka:29092 --list
+      "
+    restart: on-failure
